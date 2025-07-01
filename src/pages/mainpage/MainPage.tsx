@@ -6,23 +6,23 @@ import { MapContainer, Marker, Popup, TileLayer } from "react-leaflet";
 import { MapBox } from "../../components/mapbox/MapBox";
 
 function MainPage() {
-
-   return (
+  return (
     <>
       <Navbar />
       <CssBaseline />
       <Sidebar />
       <Box
         sx={{
-          marginLeft: '240px', 
-          padding: 3,
-          height: 'calc(100vh - 50px)'
-        }} 
+          marginLeft: '240px',
+          height: 'calc(100vh - 50px)',
+          overflow: 'hidden',
+        }}
       >
-          <MapBox lat={43.06} lng={131.52}/>
+        <MapBox lat={43.1155} lng={131.8855} /> {/* Владивосток */}
       </Box>
     </>
   );
 }
+
 
 export default MainPage;
