@@ -2,6 +2,12 @@ import { Box, Button, Card, CardActions, CardContent, CardMedia, Paper, Typograp
 import Grid from "@mui/material/Grid";
 import { getAllPlants, PlantRsDto } from "../../../services/plants";
 import { useEffect, useState } from "react";
+import { styled } from '@mui/material/styles';
+import { Theme } from '@mui/material/styles';
+import { point } from "leaflet";
+import CreatePlantModal from "./KnowledgeCreatePlantModal";
+import CreatePlantForm from "./CreatePlantForm";
+
 
 type PlantUi = {
     id: number;
@@ -19,9 +25,18 @@ function convertToPlantUi(response : PlantRsDto) : PlantUi {
     }
 }
 
+const StyledCard = styled(Card)(({ theme }) => ({
+    transition: 'border 0.3s linear, box-shadow 0.3s ease-in-out',
+
+    ':hover': {
+        boxShadow: theme.shadows[16],
+    }
+}));
+
 const KnowledgeDatabasePlantGrid = () => {
 
     const [plantsUi, setPlantsUi] = useState<PlantUi[]>([]);
+    const [isCreating, setIsCreating] = useState(false);
 
     useEffect(() => {
         const formData = async () => {
@@ -37,9 +52,22 @@ const KnowledgeDatabasePlantGrid = () => {
         formData();
     }, []);
 
+    const handleCreateNewPlant = () => {
+        alert('Was clicked')
+    }
+
+    if (isCreating) {
+        return <CreatePlantForm onCancel={() => setIsCreating(false)} />;
+    }
+
     return (
         <>
-            <Button variant="contained" color="success" sx={{ mb: 2 }}>
+            <Button 
+                variant="contained" 
+                color="success" 
+                sx={{ mb: 2 }}
+                onClick={() => setIsCreating(true)}
+            >
                 Добавить новое растение
             </Button>
             <Grid
@@ -48,11 +76,12 @@ const KnowledgeDatabasePlantGrid = () => {
             >
                 {plantsUi.map((plant) => (
                     <Grid item xs={ 12 } sm={ 6 } lg={ 4 } key={ plant.id }>
-                        <Card 
+                        <StyledCard 
                             sx={{ 
                                 display: 'flex', 
                                 height: 220,
-                                padding: '5px 5px 5px 5px'
+                                padding: '5px 5px 5px 5px',
+                                backgroundColor:'rgb(241, 239, 239)'
                             }}
                         >
                             <Box sx={{ display: 'flex', flexDirection: 'column', flexGrow: 1, padding: 2 }}>
@@ -61,9 +90,12 @@ const KnowledgeDatabasePlantGrid = () => {
                                         {plant.name}
                                     </Typography>
                                     <Typography variant="body2" color="text.secondary" sx={{ overflow: 'hidden', textOverflow: 'ellipsis', maxHeight: 80 }}>
-                                        {plant.description}
+                                        { plant.description }
                                     </Typography>
                                 </CardContent>
+                                <CardActions sx={{ justifyContent: 'start' }}>
+                                    <Button size="small">Подробнее</Button>
+                                </CardActions>
                             </Box>
 
                             {/* Правая часть: изображение */}
@@ -76,7 +108,7 @@ const KnowledgeDatabasePlantGrid = () => {
                                     
                                 />
                             </Box>
-                        </Card>
+                        </StyledCard>
                     </Grid>
                 ))}
             </Grid>

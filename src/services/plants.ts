@@ -1,6 +1,7 @@
 import api from './api';
 
 const PLANT_URI = '/plants';
+const CURRENT_BEARER_TOKEN = 'eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9.eyJzdWIiOiJyb290IiwiaXNfYWRtaW4iOiJ0cnVlIiwiZXhwIjoxNzUxNTQxOTczfQ.zjpKaZahkqdk7FMQyfoj3e7eODoYHQC56DlJldvwTRI';
 
 export type PlantRsDto = {
   plant_id: number;
@@ -10,10 +11,10 @@ export type PlantRsDto = {
   plant_picture_base64?: string;
 };
 
-export type CreatePlantDto = {
+export type CreatePlantRqDto = {
   plant_name: string;
   plant_description: string;
-  plant_picture_base64?: string;
+  plant_picture_id?: number;
 };
 
 export async function getAllPlants(): Promise<PlantRsDto[]> {
@@ -27,8 +28,15 @@ export async function getPlantById(plantId: number): Promise<PlantRsDto> {
   return response.data as PlantRsDto;
 }
 
-export async function createPlant(data: CreatePlantDto): Promise<PlantRsDto> {
-  const response = await api.post(PLANT_URI, data);
+export async function createPlant(data: CreatePlantRqDto): Promise<PlantRsDto> {
+  const response = await api.post(PLANT_URI + '/insert', null, 
+    {
+      params: data,
+      headers: {
+        'Authorization': `Bearer ${CURRENT_BEARER_TOKEN}`
+      }
+    },
+  );
   return response.data as PlantRsDto;
 }
 
