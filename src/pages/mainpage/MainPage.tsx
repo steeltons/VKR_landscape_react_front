@@ -4,25 +4,26 @@ import Sidebar from "../../components/sidebar/Sidebar";
 import { useState } from "react";
 import { MapContainer, Marker, Popup, TileLayer } from "react-leaflet";
 import { MapBox } from "../../components/mapbox/MapBox";
+import KnowledgeDatabase from "../../components/knowledgedatabase/KnowledgeDatabase";
 
-function MainPage() {
+export default function MainPage() {
+  const [knowledgeOpen, setKnowledgeOpen] = useState(false);
+
   return (
     <>
       <Navbar />
       <CssBaseline />
-      <Sidebar />
+      <Sidebar onOpenKnowledgeDb={() => setKnowledgeOpen(true)} />
       <Box
         sx={{
-          marginLeft: '240px',
-          height: 'calc(100vh - 50px)',
+          marginLeft: '350px', // ширина Sidebar
+          height: 'calc(100vh - 50px)', // учёт AppBar
           overflow: 'hidden',
         }}
       >
-        <MapBox lat={43.1155} lng={131.8855} /> {/* Владивосток */}
+        <MapBox lat={43.1155} lng={131.8855} />
       </Box>
+      <KnowledgeDatabase open={knowledgeOpen} onClose={() => setKnowledgeOpen(false)} />
     </>
   );
 }
-
-
-export default MainPage;
