@@ -29,29 +29,28 @@ const menuItems = [
   { text: 'Настройки', icon: <Settings /> },
 ];
 
-export const Sidebar: React.FC = () => {
+interface SidebarProps {
+  onOpenKnowledgeDb: () => void;
+}
+
+export const Sidebar: React.FC<SidebarProps> = ({ onOpenKnowledgeDb }) => {
   return (
     <Drawer
-        variant="permanent"
-        sx={{
-            width: drawerWidth,
-            flexShrink: 0,
-            [`& .MuiDrawer-paper`]: {
-            width: drawerWidth,
-            boxSizing: 'border-box',
-            backgroundColor: '#f4f6f8',
-            borderRight: '1px solid #ccc',
-            top: 50, // чтобы не перекрывал AppBar
-            height: 'calc(100% - 50px)',
-            },
-        }}
+      variant="permanent"
+      sx={{
+        width: drawerWidth,
+        flexShrink: 0,
+        [`& .MuiDrawer-paper`]: {
+          width: drawerWidth,
+          boxSizing: 'border-box',
+          backgroundColor: '#f4f6f8',
+          borderRight: '1px solid #ccc',
+          top: 50, // чтобы не перекрывал AppBar
+          height: 'calc(100% - 50px)',
+        },
+      }}
     >
-      <Box 
-        sx={{ 
-            padding: 2, 
-            textAlign: 'center' 
-        }}
-      >
+      <Box sx={{ padding: 2, textAlign: 'center' }}>
         <Avatar
           src="https://via.placeholder.com/80"
           sx={{ width: 140, height: 140, margin: '0 auto' }}
@@ -64,31 +63,26 @@ export const Sidebar: React.FC = () => {
         </Typography>
       </Box>
       <Divider />
-      <List
-        sx={{
-            width: '80%',
-            m: '0 auto'
-        }}
-      >
+      <List sx={{ width: '80%', m: '0 auto' }}>
         {menuItems.map(({ text, icon }) => (
-        <ListItemButton key={text}>
+          <ListItemButton
+            key={text}
+            onClick={text === 'База знаний' ? onOpenKnowledgeDb : undefined}
+          >
             <ListItemIcon>{icon}</ListItemIcon>
-            <ListItemText  
-                primary={text}
-                sx={{
-                    textAlign: 'justify'
-                }} 
-            />
-        </ListItemButton>
+            <ListItemText primary={text} sx={{ textAlign: 'justify' }} />
+          </ListItemButton>
         ))}
       </List>
-      
+
       <Box sx={{ flexGrow: 1 }} />
       <Box sx={{ p: 2 }}>
         <Divider />
         <List>
           <ListItemButton>
-            <ListItemIcon><Logout /></ListItemIcon>
+            <ListItemIcon>
+              <Logout />
+            </ListItemIcon>
             <ListItemText primary="Выйти" />
           </ListItemButton>
         </List>
