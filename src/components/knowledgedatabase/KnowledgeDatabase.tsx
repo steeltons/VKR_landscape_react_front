@@ -1,6 +1,8 @@
 import React, { useEffect, useState } from 'react';
 import { Box, Modal, Typography, Button, Tabs, Tab, Paper } from '@mui/material';
 import KnowledgeDatabasePlantGrid from './components/KnowledgeDatabasePlantGrid';
+import KnowledgeDatabaseReliefGrid from './components/relief/KnowledgeDatabaseReliefGrid';
+import KnowledgeDatabaseClimateGrid from './components/climate/KnowledgeDatabaseClimateGrid';
 
 const style = {
   position: 'absolute' as const,
@@ -21,7 +23,8 @@ enum KnowledgeDatabaseTab {
     CLIMATE = 'Климат',
     SOIL = 'Почва',
     GROUND = 'Грунт',
-    WATER = 'Воды'
+    WATER = 'Воды',
+    RELIEF = 'Рельефы'
 }
 
 const KnowledgeDatabase = ({ open, onClose }: { open: boolean; onClose: () => void }) => {
@@ -34,7 +37,8 @@ const KnowledgeDatabase = ({ open, onClose }: { open: boolean; onClose: () => vo
   const renderContent = () => {
     switch (selectedTab) {
         case KnowledgeDatabaseTab.PLANT: return <KnowledgeDatabasePlantGrid />
-        case KnowledgeDatabaseTab.CLIMATE: return <>Почва</>
+        case KnowledgeDatabaseTab.CLIMATE: return <KnowledgeDatabaseClimateGrid />
+        case KnowledgeDatabaseTab.RELIEF: return <KnowledgeDatabaseReliefGrid />
         default: return null;
     }
   };

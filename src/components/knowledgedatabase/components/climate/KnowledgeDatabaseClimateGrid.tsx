@@ -1,26 +1,25 @@
 import { Box, Button, Card, CardActions, CardContent, CardMedia, Paper, Typography } from "@mui/material";
 import Grid from "@mui/material/Grid";
-import { deletePlantById, getAllPlants, PlantRsDto } from "../../../services/plants";
 import { useEffect, useState } from "react";
 import { styled } from '@mui/material/styles';
-import CreatePlantForm from "./CreatePlantForm";
-import { useSnackbar } from "notistack";
-import { useJwtPayload } from "../../../hooks/usejwtPayload";
+import { useJwtPayload } from "../../../../hooks/usejwtPayload";
+import CreateReliefForm from "./CreateClimateForm";
+import { ClimatRsDto, deleteClimat, getAllClimats } from "../../../../services/climate";
 
 
-type PlantUi = {
+type KnowledgeDatabaseObjectUi = {
     id: number;
     name: string;
     description: string;
     base64Image? : string
 }
 
-function convertToPlantUi(response : PlantRsDto) : PlantUi {
+function convertToKnowledfeDatabaseObjectUi(response : ClimatRsDto) : KnowledgeDatabaseObjectUi {
     return {
-        id: response.plant_id,
-        name: response.plant_name,
-        description: response.plant_description,
-        base64Image: response.plant_picture_base64
+        id: response.climat_id,
+        name: response.climat_name,
+        description: response.climat_description,
+        base64Image: response.climat_picture_base64
     }
 }
 
@@ -32,23 +31,21 @@ const StyledCard = styled(Card)(({ theme }) => ({
     }
 }));
 
-const KnowledgeDatabasePlantGrid = () => {
+const KnowledgeDatabaseClimateGrid = () => {
 
-    const [plantsUi, setPlantsUi] = useState<PlantUi[]>([]);
+    const [objectsUi, setObjectsUi] = useState<KnowledgeDatabaseObjectUi[]>([]);
     const [isCreating, setIsCreating] = useState(false);
-    const [selectedPlant, setSelectedPlant] = useState<PlantUi| null>(null);
+    const [selectedObject, setSelectedObject] = useState<KnowledgeDatabaseObjectUi| null>(null);
     const payload = useJwtPayload();
-    const { enqueueSnackbar } = useSnackbar();
 
     const isAdmin = payload?.is_admin || false;
 
     useEffect(() => {
         const formData = async () => {
             try {
-                const response = await getAllPlants();
-                const convertedDatas = response.map((plant) => convertToPlantUi(plant));
-                console.log(convertedDatas)
-                setPlantsUi(convertedDatas);
+                const response = await getAllClimats();
+                const convertedDatas = response.map((obj) => convertToKnowledfeDatabaseObjectUi(obj));
+                setObjectsUi(convertedDatas);
             } catch (error : any) {
                 console.error(error.response?.data || error.message);
                 throw error;
@@ -57,11 +54,12 @@ const KnowledgeDatabasePlantGrid = () => {
         formData();
     }, [isCreating]);
 
-    const handleDeletePlant = (plantId: number) => {
+    const handleDeleteObject = (id: number) => {
         const deletePlant = async() => {
             try {
-                await deletePlantById(plantId);
-                setPlantsUi((prevPlants) => prevPlants.filter((plant) => plant.id !== plantId));
+                await deleteClimat(id);
+
+                setObjectsUi((prevObject) => prevObject.filter((obj) => obj.id !== id));
             } catch (exception: any) {
                 console.error(exception);
                 throw exception;
@@ -70,24 +68,24 @@ const KnowledgeDatabasePlantGrid = () => {
         deletePlant();
     }
 
-    const handleSelectPlant = (plantId: number) => {
-        const plant = plantsUi.filter(plant => plant.id === plantId)[0]
-        setSelectedPlant(plant);
+    const handleSelectObject = (id: number) => {
+        const newSelectedObj = objectsUi.filter(obj => obj.id === id)[0];
+        setSelectedObject(newSelectedObj);
         setIsCreating(true)
     }
 
-    const handleCreatePlant = () => {
+    const handleCreateObject = () => {
         setIsCreating(true);
-        setSelectedPlant(null);
+        setSelectedObject(null);
     }
 
     if (isCreating) {
-        return <CreatePlantForm 
+        return <CreateReliefForm 
             onCancel={() => setIsCreating(false)}
-            id={ selectedPlant?.id } 
-            insertName={ selectedPlant?.name || '' } 
-            insertDescription={ selectedPlant?.description || '' } 
-            isUpdate={ selectedPlant !== null } 
+            id={ selectedObject?.id } 
+            insertName={ selectedObject?.name || '' } 
+            insertDescription={ selectedObject?.description || '' } 
+            isUpdate={ selectedObject !== null } 
             canUserEdit={ isAdmin }    
         />;
     }
@@ -99,17 +97,17 @@ const KnowledgeDatabasePlantGrid = () => {
                     variant="contained" 
                     color="success" 
                     sx={{ mb: 2 }}
-                    onClick={() => handleCreatePlant()}
+                    onClick={() => handleCreateObject()}
                 >
-                    Добавить новое растение
+                    Добавить новый климат
                 </Button>
             }
             <Grid
                 container
                 spacing={ 2 }
             >
-                {plantsUi.map((plant) => (
-                    <Grid item xs={12} sm={6} lg={4} key={plant.id}>
+                {objectsUi.map((obj) => (
+                    <Grid item xs={12} sm={6} lg={4} key={obj.id}>
                         <StyledCard
                             sx={{
                                 display: 'flex',
@@ -128,18 +126,18 @@ const KnowledgeDatabasePlantGrid = () => {
                                             overflow: 'hidden'
                                         }}
                                     >
-                                        {plant.name}
+                                        {obj.name}
                                     </Typography>
                                     <Typography
                                     variant="body2"
                                     color="text.secondary"
                                     sx={{ overflow: 'hidden', textOverflow: 'ellipsis', maxHeight: 80, maxWidth: 150 }}
                                     >
-                                        {plant.description}
+                                        {obj.description}
                                     </Typography>
                                 </CardContent>
                                 <CardActions sx={{ justifyContent: 'start' }}>
-                                    <Button size="small" onClick={() => handleSelectPlant(plant.id) }>Подробнее</Button>
+                                    <Button size="small" onClick={() => handleSelectObject(obj.id) }>Подробнее</Button>
                                 </CardActions>
                             </Box>
 
@@ -152,13 +150,13 @@ const KnowledgeDatabasePlantGrid = () => {
                                     height: 192,
                                     objectFit: 'cover',
                                     }}
-                                    image={`data:image/jpeg;base64,${plant.base64Image}`}
-                                    alt={plant.name}
+                                    image={`data:image/jpeg;base64,${obj.base64Image}`}
+                                    alt={obj.name}
                                 />
                                 {isAdmin &&
                                     <Button
                                         size="small"
-                                        onClick={() => handleDeletePlant(plant.id)}
+                                        onClick={() => handleDeleteObject(obj.id)}
                                         sx={{
                                         position: 'absolute',
                                         bottom: 25,
@@ -187,4 +185,4 @@ const KnowledgeDatabasePlantGrid = () => {
     )
 }
 
-export default KnowledgeDatabasePlantGrid;
+export default KnowledgeDatabaseClimateGrid;
