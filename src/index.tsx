@@ -4,6 +4,7 @@ import './styles/index.css';
 import 'leaflet/dist/leaflet'
 import App from './App';
 import reportWebVitals from './reportWebVitals';
+import { createBrowserRouter } from 'react-router-dom';
 
 const root = ReactDOM.createRoot(
   document.getElementById('root') as HTMLElement

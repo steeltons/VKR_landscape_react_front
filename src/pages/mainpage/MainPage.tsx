@@ -4,7 +4,7 @@ import Sidebar from "../../components/sidebar/Sidebar";
 import { useState } from "react";
 import { MapBox } from "../../components/mapbox/MapBox";
 import KnowledgeDatabase from "../../components/knowledgedatabase/KnowledgeDatabase";
-import LoginModal from "../../components/login/LoginModal";
+import LoginLogoutModal from "../../components/login/LoginLogoutModal";
 
 export default function MainPage() {
   const [knowledgeOpen, setKnowledgeOpen] = useState(false);
@@ -28,7 +28,8 @@ export default function MainPage() {
         <MapBox lat={43.1155} lng={131.8855} />
       </Box>
       <KnowledgeDatabase open={knowledgeOpen} onClose={() => setKnowledgeOpen(false)} />
-      <LoginModal open={ isLoginModalOpen } onClose={() => setLoginModalOpen(false)} />
+      {/* <LoginModal open={ isLoginModalOpen } onClose={() => setLoginModalOpen(false)} /> */}
+        <LoginLogoutModal open={ isLoginModalOpen } onClose={() => setLoginModalOpen(false)} />
     </>
   );
 }

@@ -1,5 +1,7 @@
 import axios from "axios";
 import { parseJwt } from "../utils/token";
+import { ApiException } from "../common/exceptions";
+import { ErrorResponse } from "../common/models";
 
 const BASE_URL = process.env.REACT_APP_API_BASE_URL;
 
@@ -32,5 +34,17 @@ api.interceptors.request.use((config) => {
 
     return config;
 })
+
+api.interceptors.response.use(
+    (response) => response,
+    (error) => {
+        console.error(error);
+        const response = error.response;
+        const status : number = response.status;
+        const data: ErrorResponse = response.data;
+
+        throw new ApiException(data.detail, status);
+    }
+)
 
 export default api;

@@ -82,3 +82,7 @@ export interface Climat {
 export type ResponseMessage = {
   message: string;
 }
+
+export type ErrorResponse = {
+  detail: string;
+}

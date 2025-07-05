@@ -1,7 +1,7 @@
 import React, { useEffect, useState } from 'react';
 import {
   Box, Drawer, List, ListItemButton, ListItemIcon, ListItemText,
-  Avatar, Typography, Divider
+  Avatar, Typography, Divider,
 } from '@mui/material';
 import {
   Book, Map, Person, Settings, Logout, Login
@@ -104,7 +104,7 @@ export const Sidebar: React.FC<SidebarProps> = ({ onOpenKnowledgeDb, onLoginClic
             <List>
               <ListItemButton onClick={handleOnLogout}>
                 <ListItemIcon><Logout /></ListItemIcon>
-                <ListItemText primary="Выйти" />
+                  <ListItemText primary="Выйти" />
               </ListItemButton>
             </List>
           </>
