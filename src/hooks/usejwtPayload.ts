@@ -5,6 +5,10 @@ type JwtPayload = {
   sub: string;
   is_admin: boolean;
   exp: number;
+  surname: string;
+  name: string;
+  fathername: string;
+  id: string;
   [key: string]: any; // на случай дополнительных полей
 };
 

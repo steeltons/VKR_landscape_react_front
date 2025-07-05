@@ -1,6 +1,12 @@
+import { ApiException } from "../common/exceptions";
 import api from "./api";
 
 const PICTURES_URL = '/pictures'
+
+export type PictureRsDto = {
+  picture_id: number;
+  picture_base64: string;
+}
 
 /**
  * Загружает изображение как файл на сервер и получает ID.
@@ -18,8 +24,13 @@ export async function uploadImageFile(file: File): Promise<number> {
   });
 
   if (!response.data.id) {
-    throw new Error("Не удалось получить ID изображения из ответа");
+    throw new ApiException('Не удалось получить ID изображения из ответа', 500)
   }
 
   return response.data.id;
+}
+
+export async function getImageById(imageId: number) : Promise<PictureRsDto> {
+  const response = await api.get(PICTURES_URL + `/${imageId}`);
+  return response.data[0];
 }

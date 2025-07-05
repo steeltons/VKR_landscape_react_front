@@ -10,10 +10,33 @@ export type RegisterUserRqDto = {
     user_email: string;
 }
 
+export type UserRsDto = {
+    user_id: number;
+    user_login: string;
+    user_password: string;
+    user_email: string;
+    user_surname: string;
+    user_name: string;
+    user_fathername: string;
+    user_age: number;
+    user_is_female: boolean;
+    user_is_admin: boolean;
+    user_picture_id: number;
+    user_picture_base64: string;
+}
+
 export async function registerUser(data: RegisterUserRqDto) : Promise<ResponseMessage> {
     const response = await api.post(USER_URL + '/insert', null, {
             params: data
         });
-    console.log(response.data);
     return response.data;
+}
+
+export async function getUserById(userId: number) : Promise<UserRsDto> {
+    const response = await api.get(USER_URL + '/one', {
+        params: {
+            user_id: userId
+        }
+    });
+    return response.data[0];
 }

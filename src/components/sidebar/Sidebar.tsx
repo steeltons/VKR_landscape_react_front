@@ -9,6 +9,7 @@ import {
 import { useJwtPayload } from '../../hooks/usejwtPayload';
 import { useSnackbar } from 'notistack';
 import { logoutUser } from '../../services/authorisation';
+import UserProfile from './components/UserProfile';
 
 const drawerWidth = 350;
 
@@ -59,13 +60,14 @@ export const Sidebar: React.FC<SidebarProps> = ({ onOpenKnowledgeDb, onLoginClic
         },
       }}
     >
-      <Box sx={{ padding: 2, textAlign: 'center' }}>
+      <UserProfile />
+      {/* <Box sx={{ padding: 2, textAlign: 'center' }}>
         <Avatar src="https://via.placeholder.com/80" sx={{ width: 140, height: 140, margin: '0 auto' }} />
         <Typography variant="h6" sx={{ mt: 1 }}>
           {(login !== null && login !== undefined) ? login : 'Пользователь'}
         </Typography>
         <Typography variant="caption" color="textSecondary">superadmin@yandex.ru</Typography>
-      </Box>
+      </Box> */}
       <Divider />
       <List sx={{ width: '80%', m: '0 auto' }}>
         {!tokenPayload &&
