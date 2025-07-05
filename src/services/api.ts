@@ -1,7 +1,7 @@
 import axios from "axios";
+import { parseJwt } from "../utils/token";
 
 const BASE_URL = process.env.REACT_APP_API_BASE_URL;
-const CURRENT_BEARER_TOKEN = 'eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9.eyJzdWIiOiJyb290IiwiaXNfYWRtaW4iOiJ0cnVlIiwiZXhwIjoxNzUxNjg0ODM2fQ.084TIvOU56nrh09goWuI1V6jcJGoXTpNNTxfVokaKM0';
 
 
 if (!BASE_URL) {
@@ -14,8 +14,23 @@ const api = axios.create({
     baseURL: BASE_URL,
     headers: {
         'Content-Type': 'application/json',
-        'Authorization': `BEARER ${CURRENT_BEARER_TOKEN}`
     },
 });
+
+api.interceptors.request.use((config) => {
+    const token = localStorage.getItem('token');
+    
+    if (token) {
+        const payload = parseJwt(token);
+        const expDate = payload?.exp
+        const now = Date.now() / 1000;
+
+        if (expDate && expDate >= now) {
+            config.headers.Authorization = `Bearer ${token}`
+        }
+    }
+
+    return config;
+})
 
 export default api;

@@ -7,6 +7,7 @@ import { Theme } from '@mui/material/styles';
 import { point } from "leaflet";
 import CreatePlantForm from "./CreatePlantForm";
 import { useSnackbar } from "notistack";
+import { useJwtPayload } from "../../../hooks/usejwtPayload";
 
 
 type PlantUi = {
@@ -38,7 +39,10 @@ const KnowledgeDatabasePlantGrid = () => {
     const [plantsUi, setPlantsUi] = useState<PlantUi[]>([]);
     const [isCreating, setIsCreating] = useState(false);
     const [selectedPlant, setSelectedPlant] = useState<PlantUi| null>(null);
+    const payload = useJwtPayload();
     const { enqueueSnackbar } = useSnackbar();
+
+    const isAdmin = payload?.is_admin || false;
 
     useEffect(() => {
         const formData = async () => {
@@ -85,20 +89,23 @@ const KnowledgeDatabasePlantGrid = () => {
             id={ selectedPlant?.id } 
             insertName={ selectedPlant?.name || '' } 
             insertDescription={ selectedPlant?.description || '' } 
-            isUpdate={ selectedPlant !== null }     
+            isUpdate={ selectedPlant !== null } 
+            canUserEdit={ isAdmin }    
         />;
     }
 
     return (
         <>
-            <Button 
-                variant="contained" 
-                color="success" 
-                sx={{ mb: 2 }}
-                onClick={() => handleCreatePlant()}
-            >
-                Добавить новое растение
-            </Button>
+            {isAdmin &&
+                <Button 
+                    variant="contained" 
+                    color="success" 
+                    sx={{ mb: 2 }}
+                    onClick={() => handleCreatePlant()}
+                >
+                    Добавить новое растение
+                </Button>
+            }
             <Grid
                 container
                 spacing={ 2 }
@@ -150,27 +157,29 @@ const KnowledgeDatabasePlantGrid = () => {
                                     image={`data:image/jpeg;base64,${plant.base64Image}`}
                                     alt={plant.name}
                                 />
-                                <Button
-                                    size="small"
-                                    onClick={() => handleDeletePlant(plant.id)}
-                                    sx={{
-                                    position: 'absolute',
-                                    bottom: 25,
-                                    right: 25,
-                                    minWidth: '24px',
-                                    height: '24px',
-                                    fontSize: '16px',
-                                    lineHeight: 1,
-                                    borderRadius: '50%',
-                                    backgroundColor: '#f44336',
-                                    color: 'white',
-                                    '&:hover': {
-                                        backgroundColor: '#d32f2f',
-                                    },
-                                    }}
-                                >
-                                    ×
-                                </Button>
+                                {isAdmin &&
+                                    <Button
+                                        size="small"
+                                        onClick={() => handleDeletePlant(plant.id)}
+                                        sx={{
+                                        position: 'absolute',
+                                        bottom: 25,
+                                        right: 25,
+                                        minWidth: '24px',
+                                        height: '24px',
+                                        fontSize: '16px',
+                                        lineHeight: 1,
+                                        borderRadius: '50%',
+                                        backgroundColor: '#f44336',
+                                        color: 'white',
+                                        '&:hover': {
+                                            backgroundColor: '#d32f2f',
+                                        },
+                                        }}
+                                    >
+                                        ×
+                                    </Button>
+                                }
                             </Box>
                         </StyledCard>
                     </Grid>

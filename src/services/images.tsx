@@ -1,7 +1,6 @@
 import api from "./api";
 
 const PICTURES_URL = '/pictures'
-const CURRENT_BEARER_TOKEN = 'eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9.eyJzdWIiOiJyb290IiwiaXNfYWRtaW4iOiJ0cnVlIiwiZXhwIjoxNzUxNjg0ODM2fQ.084TIvOU56nrh09goWuI1V6jcJGoXTpNNTxfVokaKM0';
 
 /**
  * Загружает изображение как файл на сервер и получает ID.
@@ -15,7 +14,6 @@ export async function uploadImageFile(file: File): Promise<number> {
   const response = await api.post(PICTURES_URL, formData, {
     headers: {
       "Content-Type": "multipart/form-data",
-      "Authorization": `Bearer ${CURRENT_BEARER_TOKEN}`
     },
   });
 

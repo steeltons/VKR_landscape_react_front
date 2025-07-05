@@ -13,12 +13,13 @@ type Props = {
   insertDescription: string;
   insertetImage?: string;
   isUpdate: boolean;
+  canUserEdit: boolean;
 };
 
 const climates = ['умеренный', 'тропический', 'субтропический', 'арктический'];
 const temperatures = Array.from({ length: 61 }, (_, i) => -20 + i); // от -20°C до +40°C
 
-const CreatePlantForm = ({ onCancel, id, insertName, insertDescription, isUpdate  }: Props) => {
+const CreatePlantForm = ({ onCancel, id, insertName, insertDescription, isUpdate, canUserEdit  }: Props) => {
   const [plantId, setPlantId] = useState(id);
   const [name, setName] = useState(insertName);
   const [description, setDescription] = useState(insertDescription);
@@ -111,7 +112,13 @@ const CreatePlantForm = ({ onCancel, id, insertName, insertDescription, isUpdate
 
       <Grid container spacing={2}>
         <Grid item xs={12}>
-          <TextField fullWidth label="Название растения" value={name} onChange={(e) => setName(e.target.value)} />
+          <TextField 
+            fullWidth 
+            label="Название растения" 
+            value={name}
+            disabled={ !canUserEdit }
+            onChange={(e) => setName(e.target.value)} 
+          />
         </Grid>
         <Grid item xs={12}>
           <TextField
@@ -120,25 +127,28 @@ const CreatePlantForm = ({ onCancel, id, insertName, insertDescription, isUpdate
             multiline
             rows={3}
             value={description}
+            disabled={ !canUserEdit }
             onChange={(e) => setDescription(e.target.value)}
           />
         </Grid>
 
         <Grid item xs={12}>
           <Box sx={{ display: 'flex', flexDirection: 'column', alignItems: 'flex-start' }}>
-            <label htmlFor="upload-image">
-              <input
-                accept="image/*"
-                id="upload-image"
-                type="file"
-                multiple
-                style={{ display: 'none' }}
-                onChange={handleImageUpload}
-              />
-              <Button variant="text" component="span">
-                📤 Загрузить изображения
-              </Button>
-            </label>
+            {canUserEdit &&
+              <label htmlFor="upload-image">
+                <input
+                  accept="image/*"
+                  id="upload-image"
+                  type="file"
+                  multiple
+                  style={{ display: 'none' }}
+                  onChange={handleImageUpload}
+                />
+                <Button variant="text" component="span">
+                  📤 Загрузить изображения
+                </Button>
+              </label>
+            }
 
             <Box sx={{ display: 'flex', flexWrap: 'wrap', gap: 3, mt: 2 }}>
               {imagePreviews.map((preview, index) => (
@@ -182,7 +192,9 @@ const CreatePlantForm = ({ onCancel, id, insertName, insertDescription, isUpdate
         </Grid>
 
         <Grid item xs={12} sm={4}>
-          <FormControl fullWidth>
+          <FormControl fullWidth
+            disabled={ !canUserEdit }
+          >
             <InputLabel>Является кормовым</InputLabel>
             <Select value={isFeed} label="Является кормовым" onChange={(e) => setIsFeed(e.target.value)}>
               <MenuItem value="Да">Да</MenuItem>
@@ -192,7 +204,9 @@ const CreatePlantForm = ({ onCancel, id, insertName, insertDescription, isUpdate
         </Grid>
 
         <Grid item xs={12} sm={4}>
-          <FormControl fullWidth>
+          <FormControl fullWidth
+            disabled={ !canUserEdit }
+          >
             <InputLabel>Нужен солнечный свет</InputLabel>
             <Select value={needsSun} label="Нужен солнечный свет" onChange={(e) => setNeedsSun(e.target.value)}>
               <MenuItem value="Да">Да</MenuItem>
@@ -202,7 +216,9 @@ const CreatePlantForm = ({ onCancel, id, insertName, insertDescription, isUpdate
         </Grid>
 
         <Grid item xs={12} sm={4}>
-          <FormControl fullWidth>
+          <FormControl fullWidth
+            disabled={ !canUserEdit }
+          >
             <InputLabel>Однолетнее</InputLabel>
             <Select value={isAnnual} label="Однолетнее" onChange={(e) => setIsAnnual(e.target.value)}>
               <MenuItem value="Да">Да</MenuItem>
@@ -212,7 +228,9 @@ const CreatePlantForm = ({ onCancel, id, insertName, insertDescription, isUpdate
         </Grid>
 
         <Grid item xs={12} sm={4}>
-          <FormControl fullWidth>
+          <FormControl fullWidth
+            disabled={ !canUserEdit }
+          >
             <InputLabel>Климат</InputLabel>
             <Select value={climate} label="Климат" onChange={(e) => setClimate(e.target.value)}>
               {climates.map((c) => (
@@ -223,7 +241,9 @@ const CreatePlantForm = ({ onCancel, id, insertName, insertDescription, isUpdate
         </Grid>
 
         <Grid item xs={6} sm={4}>
-          <FormControl fullWidth>
+          <FormControl fullWidth
+            disabled={ !canUserEdit }
+          >
             <InputLabel>Мин. температура</InputLabel>
             <Select value={minTemp} label="Мин. температура" onChange={(e) => setMinTemp(e.target.value)}>
               {temperatures.map((t) => (
@@ -234,7 +254,9 @@ const CreatePlantForm = ({ onCancel, id, insertName, insertDescription, isUpdate
         </Grid>
 
         <Grid item xs={6} sm={4}>
-          <FormControl fullWidth>
+          <FormControl fullWidth
+            disabled={ !canUserEdit }
+          >
             <InputLabel>Макс. температура</InputLabel>
             <Select value={maxTemp} label="Макс. температура" onChange={(e) => setMaxTemp(e.target.value)}>
               {temperatures.map((t) => (
@@ -244,14 +266,16 @@ const CreatePlantForm = ({ onCancel, id, insertName, insertDescription, isUpdate
           </FormControl>
         </Grid>
 
-        <Grid item xs={12} sx={{ display: 'flex', justifyContent: 'flex-end', gap: 2 }}>
-          <Button variant="outlined" onClick={onCancel}>
-            ❌ Отмена
-          </Button>
-          <Button variant="contained" color="success" onClick={handleSubmit}>
-            💾 Сохранить
-          </Button>
-        </Grid>
+        {canUserEdit &&
+          <Grid item xs={12} sx={{ display: 'flex', justifyContent: 'flex-end', gap: 2 }}>
+            <Button variant="outlined" onClick={onCancel}>
+              ❌ Отмена
+            </Button>
+            <Button variant="contained" color="success" onClick={handleSubmit}>
+              💾 Сохранить
+            </Button>
+          </Grid>
+        }
       </Grid>
     </Box>
   );

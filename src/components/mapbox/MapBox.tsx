@@ -6,6 +6,8 @@ import { CenterOnClick } from './components/CenterOnClick';
 import MarkerPoint from './components/MarkerPoint';
 import { getCoordinateById, getAllCoords, CoordinatesRsDto } from '../../services/coordinate';
 import { ZonePolygon } from './components/ZonePolygon';
+import { useSnackbar } from 'notistack';
+import { getTerritorieById } from '../../services/territory';
 
 delete (L.Icon.Default.prototype as any)._getIconUrl;
 L.Icon.Default.mergeOptions({
@@ -42,8 +44,6 @@ export const MapBox: React.FC<MapBoxProps> = ({ lat, lng, zoom = 12 }) => {
         lat: lat, 
         lng: lng
     })
-
-    const [points, setPoints] = useState<MarkerProps[]>([]);
     const [responsePoints, setResponsePoints] = useState<Array<CoordinatesRsDto[]>>(new Array());
 
     useEffect(() => {
@@ -53,8 +53,9 @@ export const MapBox: React.FC<MapBoxProps> = ({ lat, lng, zoom = 12 }) => {
                 const new_points : MarkerProps[] = response.map((object) => {
                     return {lat: object.coords_coord_x, lng: object.coords_coord_y}
                 })
-                setPoints(new_points);
                 let grouped_points = groupPointsByTerritoryId(response);
+                // let territories = grouped_points.keys()
+                  // .map((id) => getTerritorieById(id))
                 setResponsePoints(Array.from(grouped_points.values()))
             } catch (err : any) {
                 console.error(err.response?.data || err.message)
@@ -77,9 +78,6 @@ export const MapBox: React.FC<MapBoxProps> = ({ lat, lng, zoom = 12 }) => {
         />
         <MarkerPoint lat={markerProps.lat} lng={ markerProps.lng } />
         {responsePoints.map((points) => <ZonePolygon points={ points } />)}
-        {responsePoints.map((points) => {
-            return points.map(point => <Marker position={[point.coords_coord_x, point.coords_coord_y]} />)
-        })}
         <CenterOnClick lat={lat} lng={lng} setMarkerProps={ setMarkerProps } />
       </MapContainer>
     </div>

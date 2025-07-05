@@ -15,6 +15,15 @@ export interface RelatedObjectRsDto {
     climats: Climat[];
 }
 
+export interface TerritorieRsDto {
+  territorie_id: number;
+  territorie_landscape_id: number;
+  territorie_description: number;
+  territorie_color_r: number;
+  territorie_color_g: number;
+  territorie_color_b: number;
+}
+
 export interface RelatedObjectsRsDto {
     territories: RelatedObjectRsDto[] 
 }
@@ -34,4 +43,13 @@ export async function getRelatedObjectsByCoord(pointX: number, pointY: number, i
     console.error(error.response?.data || error.message);
     throw error;
   }
+}
+
+export async function getTerritorieById(territorieId: number) : Promise<TerritorieRsDto> {
+  const response  = await api.get('/territories/one', {
+    params: {
+      territorie_id: territorieId
+    }
+  })
+  return response.data as TerritorieRsDto;
 }
