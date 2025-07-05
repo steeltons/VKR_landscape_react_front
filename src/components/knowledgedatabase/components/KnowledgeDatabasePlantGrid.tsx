@@ -1,12 +1,12 @@
 import { Box, Button, Card, CardActions, CardContent, CardMedia, Paper, Typography } from "@mui/material";
 import Grid from "@mui/material/Grid";
-import { getAllPlants, PlantRsDto } from "../../../services/plants";
+import { deletePlantById, getAllPlants, PlantRsDto } from "../../../services/plants";
 import { useEffect, useState } from "react";
 import { styled } from '@mui/material/styles';
 import { Theme } from '@mui/material/styles';
 import { point } from "leaflet";
-import CreatePlantModal from "./KnowledgeCreatePlantModal";
 import CreatePlantForm from "./CreatePlantForm";
+import { useSnackbar } from "notistack";
 
 
 type PlantUi = {
@@ -37,12 +37,15 @@ const KnowledgeDatabasePlantGrid = () => {
 
     const [plantsUi, setPlantsUi] = useState<PlantUi[]>([]);
     const [isCreating, setIsCreating] = useState(false);
+    const [selectedPlant, setSelectedPlant] = useState<PlantUi| null>(null);
+    const { enqueueSnackbar } = useSnackbar();
 
     useEffect(() => {
         const formData = async () => {
             try {
                 const response = await getAllPlants();
                 const convertedDatas = response.map((plant) => convertToPlantUi(plant));
+                console.log(convertedDatas)
                 setPlantsUi(convertedDatas);
             } catch (error : any) {
                 console.error(error.response?.data || error.message);
@@ -50,14 +53,40 @@ const KnowledgeDatabasePlantGrid = () => {
             }
         };
         formData();
-    }, []);
+    }, [isCreating]);
 
-    const handleCreateNewPlant = () => {
-        alert('Was clicked')
+    const handleDeletePlant = (plantId: number) => {
+        const deletePlant = async() => {
+            try {
+                await deletePlantById(plantId);
+                setPlantsUi((prevPlants) => prevPlants.filter((plant) => plant.id !== plantId));
+            } catch (exception: any) {
+                console.error(exception);
+                throw exception;
+            }
+        };
+        deletePlant();
+    }
+
+    const handleSelectPlant = (plantId: number) => {
+        const plant = plantsUi.filter(plant => plant.id === plantId)[0]
+        setSelectedPlant(plant);
+        setIsCreating(true)
+    }
+
+    const handleCreatePlant = () => {
+        setIsCreating(true);
+        setSelectedPlant(null);
     }
 
     if (isCreating) {
-        return <CreatePlantForm onCancel={() => setIsCreating(false)} />;
+        return <CreatePlantForm 
+            onCancel={() => setIsCreating(false)}
+            id={ selectedPlant?.id } 
+            insertName={ selectedPlant?.name || '' } 
+            insertDescription={ selectedPlant?.description || '' } 
+            isUpdate={ selectedPlant !== null }     
+        />;
     }
 
     return (
@@ -66,7 +95,7 @@ const KnowledgeDatabasePlantGrid = () => {
                 variant="contained" 
                 color="success" 
                 sx={{ mb: 2 }}
-                onClick={() => setIsCreating(true)}
+                onClick={() => handleCreatePlant()}
             >
                 Добавить новое растение
             </Button>
@@ -75,38 +104,73 @@ const KnowledgeDatabasePlantGrid = () => {
                 spacing={ 2 }
             >
                 {plantsUi.map((plant) => (
-                    <Grid item xs={ 12 } sm={ 6 } lg={ 4 } key={ plant.id }>
-                        <StyledCard 
-                            sx={{ 
-                                display: 'flex', 
+                    <Grid item xs={12} sm={6} lg={4} key={plant.id}>
+                        <StyledCard
+                            sx={{
+                                display: 'flex',
                                 height: 220,
-                                padding: '5px 5px 5px 5px',
-                                backgroundColor:'rgb(241, 239, 239)'
+                                backgroundColor: 'rgb(241, 239, 239)',
+                                position: 'relative', // чтобы абсолютная кнопка позиционировалась относительно карточки
                             }}
                         >
-                            <Box sx={{ display: 'flex', flexDirection: 'column', flexGrow: 1, padding: 2 }}>
+                            <Box sx={{ display: 'flex', flexDirection: 'column', flexGrow: 1, flex: 1 }}>
                                 <CardContent sx={{ flex: '1 0 auto' }}>
-                                    <Typography variant="h6" gutterBottom>
+                                    <Typography 
+                                        variant="h6" 
+                                        gutterBottom
+                                        sx={{
+                                            maxHeight: 60,
+                                            overflow: 'hidden'
+                                        }}
+                                    >
                                         {plant.name}
                                     </Typography>
-                                    <Typography variant="body2" color="text.secondary" sx={{ overflow: 'hidden', textOverflow: 'ellipsis', maxHeight: 80 }}>
-                                        { plant.description }
+                                    <Typography
+                                    variant="body2"
+                                    color="text.secondary"
+                                    sx={{ overflow: 'hidden', textOverflow: 'ellipsis', maxHeight: 80, maxWidth: 150 }}
+                                    >
+                                        {plant.description}
                                     </Typography>
                                 </CardContent>
                                 <CardActions sx={{ justifyContent: 'start' }}>
-                                    <Button size="small">Подробнее</Button>
+                                    <Button size="small" onClick={() => handleSelectPlant(plant.id) }>Подробнее</Button>
                                 </CardActions>
                             </Box>
 
-                            {/* Правая часть: изображение */}
-                            <Box>
+                            {/* Правая часть: изображение с кнопкой "x" */}
+                            <Box sx={{ position: 'relative', flex: 1, display: 'flex', justifyContent: 'center', alignItems: 'center'}}>
                                 <CardMedia
                                     component="img"
-                                    sx={{ width: 128, height: 128, margin: 2, alignSelf: 'center', objectFit: 'contain' }}
+                                    sx={{
+                                    width: 192,
+                                    height: 192,
+                                    objectFit: 'cover',
+                                    }}
                                     image={`data:image/jpeg;base64,${plant.base64Image}`}
                                     alt={plant.name}
-                                    
                                 />
+                                <Button
+                                    size="small"
+                                    onClick={() => handleDeletePlant(plant.id)}
+                                    sx={{
+                                    position: 'absolute',
+                                    bottom: 25,
+                                    right: 25,
+                                    minWidth: '24px',
+                                    height: '24px',
+                                    fontSize: '16px',
+                                    lineHeight: 1,
+                                    borderRadius: '50%',
+                                    backgroundColor: '#f44336',
+                                    color: 'white',
+                                    '&:hover': {
+                                        backgroundColor: '#d32f2f',
+                                    },
+                                    }}
+                                >
+                                    ×
+                                </Button>
                             </Box>
                         </StyledCard>
                     </Grid>

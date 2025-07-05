@@ -1,7 +1,7 @@
 import api from "./api";
 
 const PICTURES_URL = '/pictures'
-const CURRENT_BEARER_TOKEN = 'eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9.eyJzdWIiOiJyb290IiwiaXNfYWRtaW4iOiJ0cnVlIiwiZXhwIjoxNzUxNTQxOTczfQ.zjpKaZahkqdk7FMQyfoj3e7eODoYHQC56DlJldvwTRI';
+const CURRENT_BEARER_TOKEN = 'eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9.eyJzdWIiOiJyb290IiwiaXNfYWRtaW4iOiJ0cnVlIiwiZXhwIjoxNzUxNjg0ODM2fQ.084TIvOU56nrh09goWuI1V6jcJGoXTpNNTxfVokaKM0';
 
 /**
  * Загружает изображение как файл на сервер и получает ID.

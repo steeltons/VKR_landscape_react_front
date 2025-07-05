@@ -2,19 +2,26 @@ import {
   Box, Button, Grid, MenuItem, TextField, Typography, InputLabel, Select, FormControl,
 } from '@mui/material';
 import { useState } from 'react';
-import { createPlant, CreatePlantRqDto } from '../../../services/plants';
+import { createPlant, CreatePlantRqDto, updatePlant, UpdatePlantRqDto } from '../../../services/plants';
+import { enqueueSnackbar, useSnackbar } from 'notistack';
 import { uploadImageFile } from '../../../services/images';
 
 type Props = {
   onCancel: () => void;
+  id?: number;
+  insertName: string;
+  insertDescription: string;
+  insertetImage?: string;
+  isUpdate: boolean;
 };
 
 const climates = ['умеренный', 'тропический', 'субтропический', 'арктический'];
 const temperatures = Array.from({ length: 61 }, (_, i) => -20 + i); // от -20°C до +40°C
 
-const CreatePlantForm = ({ onCancel }: Props) => {
-  const [name, setName] = useState('');
-  const [description, setDescription] = useState('');
+const CreatePlantForm = ({ onCancel, id, insertName, insertDescription, isUpdate  }: Props) => {
+  const [plantId, setPlantId] = useState(id);
+  const [name, setName] = useState(insertName);
+  const [description, setDescription] = useState(insertDescription);
   const [isFeed, setIsFeed] = useState('Да');
   const [needsSun, setNeedsSun] = useState('Да');
   const [isAnnual, setIsAnnual] = useState('Нет');
@@ -23,23 +30,58 @@ const CreatePlantForm = ({ onCancel }: Props) => {
   const [maxTemp, setMaxTemp] = useState('20');
   const [imagePreviews, setImagePreviews] = useState<string[]>([]);
   const [imageFiles, setImageFiles] = useState<File[]>([]);
+  const { enqueueSnackbar } = useSnackbar();
+
+   const handleUpdatePlant = async (data: UpdatePlantRqDto) => {
+      try {
+        const response = await updatePlant(data);
+        console.log('AAA', response, typeof response)
+        enqueueSnackbar(response.message, { variant: 'success' })
+      } catch (error: any) {
+        enqueueSnackbar('Что-то пошло не так', { variant: 'error' })
+      }
+    }
+
+  const handleCreateNewPlant = async (data: CreatePlantRqDto) => {
+    try {
+      const response = await createPlant(data);
+      enqueueSnackbar(response.message, { variant: 'success' })
+    } catch (error: any) {
+        enqueueSnackbar('Что-то пошло не так', { variant: 'error' })
+    }
+  }
+
 
   const handleSubmit = () => {
-    const file: File = imageFiles[0];
-    const plantRqDto : CreatePlantRqDto = {
-        plant_name: name,
-        plant_description: description,
-    }
-
     const upload = async () => {
-        const fileId: number = await uploadImageFile(file);
-        plantRqDto.plant_picture_id = fileId;
+      const imageId  = (imageFiles.length !== 0)
+      ?  await uploadImageFile(imageFiles[0])
+      : undefined;
 
-        const result = await createPlant(plantRqDto);
-        console.log(result)
+      console.log('ImageId', imageId)
+      if (isUpdate) {
+        const plantRqDto : UpdatePlantRqDto = {
+          plant_id: plantId,
+          plant_name: name,
+          plant_description: description,
+          plant_picture_id: imageId
+        }
+        handleUpdatePlant(plantRqDto);
+      } else {
+        const plantRqDto : CreatePlantRqDto = {
+          plant_name: name,
+          plant_description: description,
+          plant_picture_id: imageId
+      }
+        handleCreateNewPlant(plantRqDto);
+      }
     }
-    upload();
     
+    try {
+      upload();
+    } catch(error: any) {
+      enqueueSnackbar('Что-то пошло не так', { variant: 'error' })
+    }
   };
 
   const handleImageUpload = (event: React.ChangeEvent<HTMLInputElement>) => {
@@ -64,7 +106,7 @@ const CreatePlantForm = ({ onCancel }: Props) => {
         ← Вернуться к растениям
       </Button>
       <Typography variant="h5" gutterBottom>
-        ➕ Добавление нового растения
+        ➕ {(plantId === undefined) ? 'Добавление нового растения' : `Редактирование растения ${name}`}
       </Typography>
 
       <Grid container spacing={2}>
@@ -204,7 +246,7 @@ const CreatePlantForm = ({ onCancel }: Props) => {
 
         <Grid item xs={12} sx={{ display: 'flex', justifyContent: 'flex-end', gap: 2 }}>
           <Button variant="outlined" onClick={onCancel}>
-            ❌ К растениям
+            ❌ Отмена
           </Button>
           <Button variant="contained" color="success" onClick={handleSubmit}>
             💾 Сохранить

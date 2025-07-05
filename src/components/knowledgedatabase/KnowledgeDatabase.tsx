@@ -1,6 +1,5 @@
-import React, { useState } from 'react';
+import React, { useEffect, useState } from 'react';
 import { Box, Modal, Typography, Button, Tabs, Tab, Paper } from '@mui/material';
-import Grid from '@mui/material/Grid';
 import KnowledgeDatabasePlantGrid from './components/KnowledgeDatabasePlantGrid';
 
 const style = {
@@ -26,32 +25,30 @@ enum KnowledgeDatabaseTab {
 }
 
 const KnowledgeDatabase = ({ open, onClose }: { open: boolean; onClose: () => void }) => {
-    const [selectedTab, setSelectedTab] = useState<KnowledgeDatabaseTab>(KnowledgeDatabaseTab.PLANT)
+    const [selectedTab, setSelectedTab] = useState<KnowledgeDatabaseTab | null>(null)
 
   const handleChange = (_: any, newValue: KnowledgeDatabaseTab) => {
-    console.log(newValue)
-    setSelectedTab(newValue)
+    setSelectedTab(newValue as KnowledgeDatabaseTab)
   };
 
   const renderContent = () => {
-    console.log('SelectedValue', selectedTab)
     switch (selectedTab) {
         case KnowledgeDatabaseTab.PLANT: return <KnowledgeDatabasePlantGrid />
+        case KnowledgeDatabaseTab.CLIMATE: return <>Почва</>
         default: return null;
     }
-    // return <KnowledgeDatabasePlantGrid />;
   };
 
   return (
     <Modal open={open} onClose={onClose} sx={{ backdropFilter: 'blur(4px)' }}>
       <Box sx={style}>
         <Typography variant="h6" sx={{ mb: 2 }}>
-            База знаний — Вкладка «{selectedTab ?? '—'}»
+            База знаний {selectedTab !== null ? ` — Вкладка «${selectedTab}»` : ''}
         </Typography>
 
         <Tabs value={selectedTab} onChange={handleChange} sx={{ mb: 2 }}>
             {Object.entries(KnowledgeDatabaseTab).map(([key, label]) => (
-                <Tab key={key} label={label} value={key} />
+                <Tab key={ label } label={ label } value={ label } />
             ))}
         </Tabs>
         {renderContent()}

@@ -78,3 +78,7 @@ export interface Climat {
   climat_picture_id: number;
   climat_picture_base64: string;
 }
+
+export type ResponseMessage = {
+  message: string;
+}
