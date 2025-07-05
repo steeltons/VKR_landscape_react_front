@@ -25,6 +25,33 @@ export type UserRsDto = {
     user_picture_base64: string;
 }
 
+export interface CreateUserRqDto {
+  user_login: string;
+  user_password: string;
+  user_email: string;
+  user_surname: string;
+  user_name: string;
+  user_fathername?: string;
+  user_age: number;
+  user_is_female: number;
+  user_is_admin?: string;
+  user_picture_id?: number;
+}
+
+export interface UpdateUserRqDto {
+  user_id: number;
+  user_login?: string;
+  user_password?: string;
+  user_email?: string;
+  user_surname?: string;
+  user_name?: string;
+  user_fathername?: string;
+  user_age?: number;
+  user_is_female?: number;
+  user_is_admin?: string;
+  user_picture_id?: number;
+}
+
 export async function registerUser(data: RegisterUserRqDto) : Promise<ResponseMessage> {
     const response = await api.post(USER_URL + '/insert', null, {
             params: data
@@ -39,4 +66,25 @@ export async function getUserById(userId: number) : Promise<UserRsDto> {
         }
     });
     return response.data[0];
+}
+
+export async function insertUser(data: CreateUserRqDto): Promise<ResponseMessage> {
+  const response = await api.post('/users/insert', null, {
+    params: data,
+  });
+  return response.data;
+}
+
+export async function updateUser(data: UpdateUserRqDto): Promise<ResponseMessage> {
+  const response = await api.patch('/users/update', null, {
+    params: data,
+  });
+  return response.data;
+}
+
+export async function deleteUser(user_id: number): Promise<ResponseMessage> {
+  const response = await api.delete('/users/delete', {
+    params: { user_id },
+  });
+  return response.data;
 }
