@@ -37,10 +37,8 @@ export const Sidebar: React.FC<SidebarProps> = ({ onOpenKnowledgeDb, onLoginClic
     }
   };
   const tokenPayload = useJwtPayload();
-  const login = tokenPayload?.sub;
 
   useEffect(() => {
-    // Debug: показываем, когда обновляется компонент
     console.log('Sidebar re-rendered due to token change');
   }, [renderTrigger]);
 
@@ -61,13 +59,6 @@ export const Sidebar: React.FC<SidebarProps> = ({ onOpenKnowledgeDb, onLoginClic
       }}
     >
       <UserProfile />
-      {/* <Box sx={{ padding: 2, textAlign: 'center' }}>
-        <Avatar src="https://via.placeholder.com/80" sx={{ width: 140, height: 140, margin: '0 auto' }} />
-        <Typography variant="h6" sx={{ mt: 1 }}>
-          {(login !== null && login !== undefined) ? login : 'Пользователь'}
-        </Typography>
-        <Typography variant="caption" color="textSecondary">superadmin@yandex.ru</Typography>
-      </Box> */}
       <Divider />
       <List sx={{ width: '80%', m: '0 auto' }}>
         {!tokenPayload &&

@@ -29,20 +29,14 @@ export interface RelatedObjectsRsDto {
 }
 
 export async function getRelatedObjectsByCoord(pointX: number, pointY: number, isNeedPictures: boolean = false): Promise<RelatedObjectsRsDto> {
-  try {
-    const response = await api.post('/territories/point-related-objects', null, {
+  const response = await api.post('/territories/point-related-objects', null, {
       params: {
         point_x: pointX,
         point_y: pointY,
         is_need_pictures: isNeedPictures
       }
     });
-    
-    return response.data;
-  } catch (error: any) {
-    console.error(error.response?.data || error.message);
-    throw error;
-  }
+  return response.data;
 }
 
 export async function getTerritorieById(territorieId: number) : Promise<TerritorieRsDto> {

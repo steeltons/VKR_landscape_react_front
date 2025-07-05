@@ -15,7 +15,7 @@ export const Navbar: React.FC = () => {
 
   return (
     <AppBar
-        position="fixed"
+        position='static'
         sx={{ backgroundColor: '#4caf50', height: 50, zIndex: (theme) => theme.zIndex.drawer + 1 }}
     >
       <Toolbar
