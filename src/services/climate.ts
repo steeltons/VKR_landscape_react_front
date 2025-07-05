@@ -25,7 +25,11 @@ export interface UpdateClimatRqDto {
 
 // Получить все климаты
 export async function getAllClimats(): Promise<ClimatRsDto[]> {
-  const response = await api.get('/climats/all');
+  const response = await api.get('/climats/all', {
+    params: {
+        is_need_pictures: true
+    }
+  });
   return response.data;
 }
 

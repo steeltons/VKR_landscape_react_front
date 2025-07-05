@@ -3,6 +3,9 @@ import { Box, Modal, Typography, Button, Tabs, Tab, Paper } from '@mui/material'
 import KnowledgeDatabasePlantGrid from './components/KnowledgeDatabasePlantGrid';
 import KnowledgeDatabaseReliefGrid from './components/relief/KnowledgeDatabaseReliefGrid';
 import KnowledgeDatabaseClimateGrid from './components/climate/KnowledgeDatabaseClimateGrid';
+import KnowledgeDatabaseSoilGrid from './components/soil/KnowledgeDatabaseSoilGrid';
+import KnowledgeDatabaseGroundGrid from './components/ground/KnowledgeDatabaseGroundGrid';
+import KnowledgeDatabaseWaterGrid from './components/water/KnowledgeDatabaseWaterGrid';
 
 const style = {
   position: 'absolute' as const,
@@ -39,6 +42,9 @@ const KnowledgeDatabase = ({ open, onClose }: { open: boolean; onClose: () => vo
         case KnowledgeDatabaseTab.PLANT: return <KnowledgeDatabasePlantGrid />
         case KnowledgeDatabaseTab.CLIMATE: return <KnowledgeDatabaseClimateGrid />
         case KnowledgeDatabaseTab.RELIEF: return <KnowledgeDatabaseReliefGrid />
+        case KnowledgeDatabaseTab.SOIL: return <KnowledgeDatabaseSoilGrid />
+        case KnowledgeDatabaseTab.GROUND: return <KnowledgeDatabaseGroundGrid />
+        case KnowledgeDatabaseTab.WATER: return <KnowledgeDatabaseWaterGrid />
         default: return null;
     }
   };
