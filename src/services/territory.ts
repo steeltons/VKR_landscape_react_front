@@ -18,7 +18,7 @@ export interface RelatedObjectRsDto {
 export interface TerritorieRsDto {
   territorie_id: number;
   territorie_landscape_id: number;
-  territorie_description: number;
+  territorie_description: string;
   territorie_color_r: number;
   territorie_color_g: number;
   territorie_color_b: number;
@@ -36,6 +36,16 @@ export async function getRelatedObjectsByCoord(pointX: number, pointY: number, i
         is_need_pictures: isNeedPictures
       }
     });
+  return response.data;
+}
+
+export async function getAllTerritories(isNeedPicture: boolean = false) : Promise<TerritorieRsDto[]> {
+  const response = await api.get('/territories/all', {
+    params: {
+      is_need_picture: isNeedPicture
+    }
+  });
+
   return response.data;
 }
 

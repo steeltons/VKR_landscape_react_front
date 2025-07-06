@@ -43,7 +43,7 @@ const KnowledgeDatabaseLandscapeGrid = () => {
     useEffect(() => {
         const formData = async () => {
             try {
-                const response = await getAllLandscapes();
+                const response = await getAllLandscapes(true);
                 const convertedDatas = response.map((obj) => convertToKnowledfeDatabaseObjectUi(obj));
                 setObjectsUi(convertedDatas);
             } catch (error : any) {

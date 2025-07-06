@@ -74,14 +74,14 @@ const MapInfo: React.FC<MapInfoProps> = ({ territories, lat, lng, opened }) => {
         <Collapse in={open} timeout="auto" unmountOnExit>
             <Box
             sx={{
-                height: 450,
+                height: 650,
                 bgcolor: 'white',
                 boxShadow: 8,
                 p: 3,
                 overflowY: 'auto',
             }}
             >
-                <Typography>Выбраная координата: ({truncateNumber(lat)} , {truncateNumber(lng)})</Typography>
+                <Typography>Выбранная координата: ({truncateNumber(lat)} , {truncateNumber(lng)})</Typography>
                 {territories.length === 0 &&
                     <Typography
                     >
@@ -91,9 +91,11 @@ const MapInfo: React.FC<MapInfoProps> = ({ territories, lat, lng, opened }) => {
                 {territories.length !== 0 &&
                     territories.map((territorie, index) => (
                         <Box key={index} sx={{ mb: 2 }}>
-                        <Accordion>
+                        <Accordion
+                            defaultExpanded={ index === 0 ? true : false }
+                        >
                             <AccordionSummary expandIcon={<ExpandMoreIcon />}>
-                            <Typography>{territorie.territorie.territorie_description}</Typography>
+                            <Typography align="center"><b>{territorie.territorie.territorie_description}</b></Typography>
                             </AccordionSummary>
                             <AccordionDetails>
 

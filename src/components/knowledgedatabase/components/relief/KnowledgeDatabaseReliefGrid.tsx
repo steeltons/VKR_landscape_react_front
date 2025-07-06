@@ -43,7 +43,7 @@ const KnowledgeDatabaseReliefGrid = () => {
     useEffect(() => {
         const formData = async () => {
             try {
-                const response = await getAllReliefs();
+                const response = await getAllReliefs(true);
                 const convertedDatas = response.map((obj) => convertToKnowledfeDatabaseObjectUi(obj));
                 console.log(convertedDatas)
                 setObjectsUi(convertedDatas);

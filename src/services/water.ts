@@ -20,10 +20,10 @@ export interface UpdateWaterRqDto extends Partial<CreateWaterRqDto> {
 }
 
 // Получить все воды
-export async function getAllWaters(): Promise<WaterRsDto[]> {
+export async function getAllWaters(isNeedPicture: boolean = false): Promise<WaterRsDto[]> {
   const response = await api.get('/waters/all', {
     params: {
-        is_need_pictures: true
+        is_need_pictures: isNeedPicture
     }
   });
   return response.data;

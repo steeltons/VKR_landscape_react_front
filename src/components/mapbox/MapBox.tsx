@@ -91,7 +91,7 @@ export const MapBox: React.FC<MapBoxProps> = ({ lat, lng, zoom = 12 }) => {
         attribution='&copy; OpenStreetMap contributors'
       />
       <MarkerPoint lat={markerProps.lat} lng={markerProps.lng} />
-      {territorieColors.map((obj, ind) => (
+      {territorieColors.map((obj) => (
         <ZonePolygon key={ obj.territorieId } points={ obj.points } color={ obj.color }/>
       ))}
       <CenterOnClick lat={lat} lng={lng} setMarkerProps={setMarkerProps} setCurrentRelatedObject={ setCurrentRelatedObject } />

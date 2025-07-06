@@ -45,7 +45,7 @@ const KnowledgeDatabasePlantGrid = () => {
     useEffect(() => {
         const formData = async () => {
             try {
-                const response = await getAllPlants();
+                const response = await getAllPlants(true);
                 const convertedDatas = response.map((plant) => convertToPlantUi(plant));
                 console.log(convertedDatas)
                 setPlantsUi(convertedDatas);

@@ -35,10 +35,12 @@ export interface UpdateLandscapeRqDto {
   landscape_picture_id?: number;
 }
 
-export async function getAllLandscapes(): Promise<LandscapeRsDto[]> {
+export async function getAllLandscapes(isNeedPicture: boolean = false, page?: number, elements?: number, ): Promise<LandscapeRsDto[]> {
   const response = await api.get('/landscapes/all', {
     params: {
-        is_need_pictures: true
+        is_need_pictures: isNeedPicture,
+        page: page,
+        elements: elements
     }
   });
   return response.data;

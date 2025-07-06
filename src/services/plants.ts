@@ -24,8 +24,8 @@ export type UpdatePlantRqDto = {
   plant_picture_id?: number;
 }
 
-export async function getAllPlants(): Promise<PlantRsDto[]> {
-  const response = await api.get(PLANT_URI + '/all', { params:  {is_need_pictures: true}});
+export async function getAllPlants(isNeedPicture: boolean = false): Promise<PlantRsDto[]> {
+  const response = await api.get(PLANT_URI + '/all', { params:  {is_need_pictures: isNeedPicture}});
   return response.data as PlantRsDto[];
 }
 

@@ -24,10 +24,10 @@ export interface UpdateReliefRqDto {
 }
 
 // Получить все рельефы
-export async function getAllReliefs(): Promise<ReliefRsDto[]> {
+export async function getAllReliefs(isNeedPicture: boolean = false): Promise<ReliefRsDto[]> {
   const response = await api.get('/reliefs/all', {
     params: {
-        is_need_pictures: true
+        is_need_pictures: isNeedPicture
     }
   });
   return response.data;

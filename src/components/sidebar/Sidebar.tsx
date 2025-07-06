@@ -121,12 +121,12 @@ export const Sidebar: React.FC<SidebarProps> = ({ onOpenKnowledgeDb, onLogout, s
 
             {tokenPayload && tokenPayload.is_admin && 
               <>
-                <ListItemButton>
+                <ListItemButton onClick={() => setSelectedSidebarTab(SidebarTab.CONSTRUCTOR)}>
                   <ListItemIcon><ConstructionOutlined /></ListItemIcon>
-                  <ListItemText primary="Конструктор территорий" sx={{ textAlign: 'justify' }}/>
+                  <ListItemText primary="Конструктор ландшафтов" sx={{ textAlign: 'justify' }}/>
                 </ListItemButton>
 
-                <ListItemButton>
+                <ListItemButton onClick={() => setSelectedSidebarTab(SidebarTab.USERS)}>
                   <ListItemIcon><PersonOutline /></ListItemIcon>
                   <ListItemText primary="Пользователи" sx={{ textAlign: 'justify' }} />
                 </ListItemButton>

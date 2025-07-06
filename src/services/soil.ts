@@ -26,10 +26,10 @@ export interface UpdateSoilRqDto extends Partial<CreateSoilRqDto> {
 }
 
 // Получить все почвы
-export async function getAllSoils(): Promise<SoilRsDto[]> {
+export async function getAllSoils(isNeedPicture: boolean = false): Promise<SoilRsDto[]> {
   const response = await api.get('/soils/all', {
     params: {
-        is_need_pictures: true
+        is_need_pictures: isNeedPicture
     }
   });
   return response.data;

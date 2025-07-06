@@ -26,10 +26,10 @@ export interface UpdateGroundRqDto extends Partial<CreateGroundRqDto> {
 }
 
 // Получить все грунты
-export async function getAllGrounds(): Promise<GroundRsDto[]> {
+export async function getAllGrounds(isNeedPicture: boolean = false): Promise<GroundRsDto[]> {
   const response = await api.get('/grounds/all', {
     params: {
-        is_need_pictures: true
+        is_need_pictures: isNeedPicture
     }
   });
   return response.data;

@@ -43,7 +43,7 @@ const KnowledgeDatabaseWaterGrid = () => {
     useEffect(() => {
         const formData = async () => {
             try {
-                const response = await getAllWaters();
+                const response = await getAllWaters(true);
                 const convertedDatas = response.map((obj) => convertToKnowledfeDatabaseObjectUi(obj));
                 setObjectsUi(convertedDatas);
             } catch (error : any) {

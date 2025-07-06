@@ -24,10 +24,10 @@ export interface UpdateClimatRqDto {
 }
 
 // Получить все климаты
-export async function getAllClimats(): Promise<ClimatRsDto[]> {
+export async function getAllClimats(isNeedPicture: boolean = false): Promise<ClimatRsDto[]> {
   const response = await api.get('/climats/all', {
     params: {
-        is_need_pictures: true
+        is_need_pictures: isNeedPicture
     }
   });
   return response.data;

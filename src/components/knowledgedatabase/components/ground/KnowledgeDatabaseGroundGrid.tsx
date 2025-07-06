@@ -43,7 +43,7 @@ const KnowledgeDatabaseGroundGrid = () => {
     useEffect(() => {
         const formData = async () => {
             try {
-                const response = await getAllGrounds();
+                const response = await getAllGrounds(true);
                 const convertedDatas = response.map((obj) => convertToKnowledfeDatabaseObjectUi(obj));
                 setObjectsUi(convertedDatas);
             } catch (error : any) {
