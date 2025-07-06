@@ -8,7 +8,6 @@ export type MarkerPointProps = {
 const MarkerPoint : React.FC<MarkerPointProps> = ({lat, lng} : MarkerPointProps) => {
     return (
         <Marker position={[lat, lng]}>
-            <Popup>Это Владивосток</Popup>
         </Marker>
     )
 }

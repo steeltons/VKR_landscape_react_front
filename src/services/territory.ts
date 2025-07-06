@@ -1,4 +1,4 @@
-import { Climat, Foundation, Ground, Landscape, Plant, Relief, Soil, Territorie, Water } from "../common/models";
+import { Climat, CustomColor, Foundation, Ground, Landscape, Plant, Relief, Soil, Territorie, Water } from "../common/models";
 import api from "./api";
 
 const TERRITORIE_URI = '/territories'
@@ -56,4 +56,22 @@ export async function getTerritorieById(territorieId: number) : Promise<Territor
     }
   })
   return response.data[0] as TerritorieRsDto;
+}
+
+export type TerritorieCreateRsDto = {
+  message: string,
+  id: number
+} 
+
+export async function createColoredTerritory(color: CustomColor) : Promise<number> {
+  const response = await api.post('/territories/insert', null, {
+    params: {
+      territorie_color_r: color.red,
+      territorie_color_g: color.greeen,
+      territorie_color_b: color.blue
+    }
+  });
+  const data = response.data as TerritorieCreateRsDto;
+  
+  return data.id;
 }

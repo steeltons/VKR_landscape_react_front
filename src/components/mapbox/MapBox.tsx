@@ -11,6 +11,8 @@ import { getTerritorieById, RelatedObjectRsDto, RelatedObjectsRsDto } from '../.
 import { Box, Typography } from '@mui/material';
 import MapInfo from './components/MapInfo';
 import { CustomColor } from '../../common/models';
+import MapAddPolygon from './components/MapAddPolygon';
+
 
 delete (L.Icon.Default.prototype as any)._getIconUrl;
 L.Icon.Default.mergeOptions({
@@ -53,6 +55,7 @@ export const MapBox: React.FC<MapBoxProps> = ({ lat, lng, zoom = 12 }) => {
     const [responsePoints, setResponsePoints] = useState<Array<CoordinatesRsDto[]>>(new Array());
     const [currentRelatedObject, setCurrentRelatedObject] = useState<RelatedObjectsRsDto | null>(null);
     const [territorieColors, setTerritorieColors] = useState<TerritorieColor[]>([]);
+    const [mode, setMode] = useState<'idle' | 'adding'>('idle');
 
     useEffect(() => {
         const fetchData = async () => {
@@ -76,7 +79,7 @@ export const MapBox: React.FC<MapBoxProps> = ({ lat, lng, zoom = 12 }) => {
             }
         }
         fetchData()
-    }, [markerProps, currentRelatedObject])
+    }, [mode])
 
   return (
     <Box sx={{ position: 'relative', width: '100%', height: '100%' }}>
@@ -90,11 +93,14 @@ export const MapBox: React.FC<MapBoxProps> = ({ lat, lng, zoom = 12 }) => {
         url="https://{s}.tile.openstreetmap.org/{z}/{x}/{y}.png"
         attribution='&copy; OpenStreetMap contributors'
       />
-      <MarkerPoint lat={markerProps.lat} lng={markerProps.lng} />
+      {mode === 'idle' &&
+        <MarkerPoint lat={markerProps.lat} lng={markerProps.lng} />
+      }
       {territorieColors.map((obj) => (
         <ZonePolygon key={ obj.territorieId } points={ obj.points } color={ obj.color }/>
       ))}
-      <CenterOnClick lat={lat} lng={lng} setMarkerProps={setMarkerProps} setCurrentRelatedObject={ setCurrentRelatedObject } />
+      <CenterOnClick lat={lat} lng={lng} setMarkerProps={setMarkerProps} setCurrentRelatedObject={ setCurrentRelatedObject } mode={ mode } />
+      <MapAddPolygon mode={ mode } setMode={ setMode } />
     </MapContainer>
 
     <MapInfo lat={ markerProps.lat } lng={ markerProps.lng } territories={ currentRelatedObject?.territories || [] } opened={ false }/>

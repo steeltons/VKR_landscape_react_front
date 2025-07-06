@@ -21,6 +21,18 @@ export async function getAllCoords() : Promise<CoordinatesRsDto[]> {
     }
 }
 
+export type CoorinateCreateRqDto = {
+    coord_x: number;
+    coord_y: number;
+    territorie_id: number;
+    order: number;
+}
+export async function insertNewCoordinate(data: CoorinateCreateRqDto) : Promise<void> {
+    await api.post('/coords/insert', null, {
+        params: data
+    });
+}
+
 export async function getCoordinateById(coodinateId: number) : Promise<CoordinatesRsDto> {
     try {
         const queryParams = {coord_id : coodinateId}

@@ -83,7 +83,7 @@ export default function MainPage() {
           overflow: 'hidden',
         }}
       >
-        <MapBox lat={43.1155} lng={131.8855} />
+        <MapBox key={renderSidebarFlag.toString()} lat={43.1155} lng={131.8855} />
       </Box>
       {renderModalScreen()}
     </>

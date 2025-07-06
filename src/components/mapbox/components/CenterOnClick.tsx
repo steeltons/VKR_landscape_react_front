@@ -13,9 +13,10 @@ interface CenterOnClickPoint {
 interface CenterOnClickProps extends CenterOnClickPoint {
     setMarkerProps: Dispatch<SetStateAction<MarkerProps>>;
     setCurrentRelatedObject: Dispatch<SetStateAction<RelatedObjectsRsDto | null>>;
+    mode: 'idle' | 'adding';
 }
 
-export const CenterOnClick: React.FC<CenterOnClickProps> = ({ lat, lng, setMarkerProps, setCurrentRelatedObject } : CenterOnClickProps, ) => {
+export const CenterOnClick: React.FC<CenterOnClickProps> = ({ lat, lng, setMarkerProps, setCurrentRelatedObject, mode } : CenterOnClickProps, ) => {
   const map = useMap();
 
   const getRelatedObjects = async ({lat, lng} : CenterOnClickPoint) => {
@@ -29,9 +30,11 @@ export const CenterOnClick: React.FC<CenterOnClickProps> = ({ lat, lng, setMarke
 
   useEffect(() => {
     const handleClick = (e: L.LeafletMouseEvent) => {
-      const point = e.latlng as CenterOnClickPoint;
-      setMarkerProps({ lat: point.lat, lng: point.lng });
-      getRelatedObjects(point);
+      if (mode === 'idle') {
+        const point = e.latlng as CenterOnClickPoint;
+        setMarkerProps({ lat: point.lat, lng: point.lng });
+        getRelatedObjects(point);
+      }
     };
 
     map.on('click', handleClick);
