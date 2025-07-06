@@ -1,30 +1,62 @@
-import { Box, Container, CssBaseline, IconButton, Menu } from "@mui/material";
+import { Box, CssBaseline } from "@mui/material";
 import Navbar from "../../components/navbar/Navbar";
 import Sidebar from "../../components/sidebar/Sidebar";
 import { useState } from "react";
 import { MapBox } from "../../components/mapbox/MapBox";
-import KnowledgeDatabase from "../../components/knowledgedatabase/KnowledgeDatabase";
 import LoginLogoutModal from "../../components/login/LoginLogoutModal";
+import KnowledgeDatabaseModal from "../../components/knowledgedatabase/KnowledgeDatabaseModal";
+import KnowledgeDatabasePlantGrid from "../../components/knowledgedatabase/components/KnowledgeDatabasePlantGrid";
+import KnowledgeDatabaseReliefGrid from "../../components/knowledgedatabase/components/relief/KnowledgeDatabaseReliefGrid";
+import KnowledgeDatabaseClimateGrid from "../../components/knowledgedatabase/components/climate/KnowledgeDatabaseClimateGrid";
+import KnowledgeDatabaseGroundGrid from "../../components/knowledgedatabase/components/ground/KnowledgeDatabaseGroundGrid";
+import KnowledgeDatabaseSoilGrid from "../../components/knowledgedatabase/components/soil/KnowledgeDatabaseSoilGrid";
+import KnowledgeDatabaseWaterGrid from "../../components/knowledgedatabase/components/water/KnowledgeDatabaseWaterGrid";
+import KnowledgeDatabaseLandscapeGrid from "../../components/knowledgedatabase/components/landscape/KnowledgeDatabaseLandscapeGrid";
 
 export enum SidebarTab {
-  PLANT = 'PLANT',
-  CLIMATE = 'CLIMATE',
-  SOIL = 'SOIL',
-  WATER = 'WATER',
-  GROUND = 'GROUND',
-  PROFILE = 'PROFILE',
-  RELIEF = 'RELIEF',
+  LOGIN = 'Войти',
+  PROFILE = 'Профиль',
+  RELIEF = 'Рельеф',
+  LANDSCAPE = 'Ландшафт',
+  PLANT = 'Растения',
+  CLIMATE = 'Климат',
+  SOIL = 'Почва',
+  GROUND = 'Грунт',
+  WATER = 'Воды',
+  CONSTRUCTOR = 'Конструктор территорий',
+  USERS = 'Пользователи',
+  SETTINGS = 'Настройки'
 }
 
 export default function MainPage() {
   const [knowledgeOpen, setKnowledgeOpen] = useState(false);
-  const [isLoginModalOpen, setLoginModalOpen] = useState(false);
   const [renderSidebarFlag, setRenderSidebarFlag] = useState(false);
   const [selecterdSidebarTab, setSelectedSidebarTab] = useState<SidebarTab | null>(null);
 
+  console.log(selecterdSidebarTab);
+
   const handleLoginClose = () => {
-    setLoginModalOpen(false);
+    setSelectedSidebarTab(null);
     setRenderSidebarFlag(prev => !prev);
+  }
+
+  const handleKnowledgeDatabaseClose = () => {
+    setSelectedSidebarTab(null);
+  }
+
+  const renderModalScreen = () => {
+    console.log('Selected', selecterdSidebarTab)
+    switch(selecterdSidebarTab) {
+      case SidebarTab.LOGIN: return <LoginLogoutModal open={ true } onClose={handleLoginClose} />;
+      case SidebarTab.RELIEF: return <KnowledgeDatabaseModal open={ true } onClose={handleKnowledgeDatabaseClose} selectedTab={ selecterdSidebarTab } renderChild={() => <KnowledgeDatabaseReliefGrid />} />;
+      case SidebarTab.LANDSCAPE: return <KnowledgeDatabaseModal open={ true } onClose={handleKnowledgeDatabaseClose} selectedTab={ selecterdSidebarTab } renderChild={() => <KnowledgeDatabaseLandscapeGrid />} />;
+      case SidebarTab.PLANT: return <KnowledgeDatabaseModal open={ true } onClose={handleKnowledgeDatabaseClose} selectedTab={ selecterdSidebarTab } renderChild={() => <KnowledgeDatabasePlantGrid />} />;
+      case SidebarTab.CLIMATE: return <KnowledgeDatabaseModal open={ true } onClose={handleKnowledgeDatabaseClose} selectedTab={ selecterdSidebarTab } renderChild={() => <KnowledgeDatabaseClimateGrid />} />;
+      case SidebarTab.GROUND: return <KnowledgeDatabaseModal open={ true } onClose={handleKnowledgeDatabaseClose} selectedTab={ selecterdSidebarTab } renderChild={() => <KnowledgeDatabaseGroundGrid />} />;
+      case SidebarTab.SOIL: return <KnowledgeDatabaseModal open={ true } onClose={handleKnowledgeDatabaseClose} selectedTab={ selecterdSidebarTab } renderChild={() => <KnowledgeDatabaseSoilGrid />} />;
+      case SidebarTab.WATER: return <KnowledgeDatabaseModal open={ true } onClose={handleKnowledgeDatabaseClose} selectedTab={ selecterdSidebarTab } renderChild={() => <KnowledgeDatabaseWaterGrid />} />;
+      default: return null
+    }
   }
 
   return (
@@ -34,8 +66,8 @@ export default function MainPage() {
       <Sidebar 
         key={renderSidebarFlag.toString()}
         onOpenKnowledgeDb={() => setKnowledgeOpen(true)}
-        onLoginClick={() => setLoginModalOpen(true)}
         onLogout={() => setRenderSidebarFlag(prev => !prev)}
+        setSelectedSidebarTab={setSelectedSidebarTab}
       />
       <Box
         sx={{
@@ -46,8 +78,7 @@ export default function MainPage() {
       >
         <MapBox lat={43.1155} lng={131.8855} />
       </Box>
-      <KnowledgeDatabase open={knowledgeOpen} onClose={() => setKnowledgeOpen(false)} />
-      <LoginLogoutModal open={ isLoginModalOpen } onClose={handleLoginClose} />
+      {renderModalScreen()}
     </>
   );
 }

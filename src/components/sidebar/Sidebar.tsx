@@ -1,33 +1,39 @@
-import React, { Dispatch, useEffect, useState } from 'react';
+import React, { Dispatch, SetStateAction, useEffect, useState } from 'react';
 import {
   Box, Drawer, List, ListItemButton, ListItemIcon, ListItemText,
   Divider
 } from '@mui/material';
 import {
-  Book, Map, Person, Settings, Logout, Login
+  Book, Map, Person, Settings, Logout, Login,
+  LocalFloristOutlined,
+  LandscapeOutlined,
+  ForestOutlined,
+  FilterDrama,
+  FilterDramaOutlined,
+  GrassOutlined,
+  WaterOutlined,
+  PersonOutline,
+  ConstructionOutlined
 } from '@mui/icons-material';
 import { useJwtPayload } from '../../hooks/usejwtPayload';
 import { useSnackbar } from 'notistack';
 import { logoutUser } from '../../services/authorisation';
 import UserProfile from './components/UserProfile';
 import UserProfileForm from './components/UserProfileForm';
+import { SidebarTab } from '../../pages/mainpage/MainPage';
 
 const drawerWidth = 350;
 
 interface SidebarProps {
   onOpenKnowledgeDb: () => void;
-  onLoginClick: () => void;
   onLogout: () => void;
+  setSelectedSidebarTab: Dispatch<SetStateAction<SidebarTab | null>>;
 }
 
-export const Sidebar: React.FC<SidebarProps> = ({ onOpenKnowledgeDb, onLoginClick, onLogout }) => {
+export const Sidebar: React.FC<SidebarProps> = ({ onOpenKnowledgeDb, onLogout, setSelectedSidebarTab }) => {
   const [showProfileForm, setShowProfileForm] = useState(false);
   const { enqueueSnackbar } = useSnackbar();
   const tokenPayload = useJwtPayload();
-
-  const handleLoginButton = async () => {
-    onLoginClick();
-  };
 
   const handleOnLogout = async () => {
     try {
@@ -71,21 +77,60 @@ export const Sidebar: React.FC<SidebarProps> = ({ onOpenKnowledgeDb, onLoginClic
             }
 
             {!tokenPayload &&
-              <ListItemButton onClick={handleLoginButton}>
+              <ListItemButton onClick={() => setSelectedSidebarTab(SidebarTab.LOGIN)}>
                 <ListItemIcon><Login /></ListItemIcon>
                 <ListItemText primary="Войти" sx={{ textAlign: 'justify' }} />
               </ListItemButton>
             }
 
-            <ListItemButton onClick={onOpenKnowledgeDb}>
-              <ListItemIcon><Book /></ListItemIcon>
-              <ListItemText primary="База знаний" sx={{ textAlign: 'justify' }} />
+            <ListItemButton onClick={() => setSelectedSidebarTab(SidebarTab.RELIEF)}>
+              <ListItemIcon><Map /></ListItemIcon>
+              <ListItemText primary="Рельефы" sx={{ textAlign: 'justify' }}/>
             </ListItemButton>
 
-            <ListItemButton>
-              <ListItemIcon><Map /></ListItemIcon>
-              <ListItemText primary="Территории" sx={{ textAlign: 'justify' }} />
+            <ListItemButton onClick={() => setSelectedSidebarTab(SidebarTab.LANDSCAPE)}>
+              <ListItemIcon><LandscapeOutlined /></ListItemIcon>
+              <ListItemText primary="Ландшафты" sx={{ textAlign: 'justify' }}/>
             </ListItemButton>
+
+            <ListItemButton onClick={() => setSelectedSidebarTab(SidebarTab.PLANT)}>
+              <ListItemIcon><ForestOutlined /></ListItemIcon>
+              <ListItemText primary="Растения" sx={{ textAlign: 'justify' }}/>
+            </ListItemButton>
+
+            <ListItemButton onClick={() => setSelectedSidebarTab(SidebarTab.CLIMATE)}>
+              <ListItemIcon><FilterDramaOutlined /></ListItemIcon>
+              <ListItemText primary="Климат" sx={{ textAlign: 'justify' }}/>
+            </ListItemButton>
+
+            <ListItemButton onClick={() => setSelectedSidebarTab(SidebarTab.SOIL)}>
+              <ListItemIcon><GrassOutlined /></ListItemIcon>
+              <ListItemText primary="Почвы" sx={{ textAlign: 'justify' }}/>
+            </ListItemButton>
+
+            <ListItemButton onClick={() => setSelectedSidebarTab(SidebarTab.GROUND)}>
+              <ListItemIcon><LocalFloristOutlined /></ListItemIcon>
+              <ListItemText primary="Грунты" sx={{ textAlign: 'justify' }}/>
+            </ListItemButton>
+
+            <ListItemButton onClick={() => setSelectedSidebarTab(SidebarTab.WATER)}>
+              <ListItemIcon><WaterOutlined /></ListItemIcon>
+              <ListItemText primary="Воды" sx={{ textAlign: 'justify' }}/>
+            </ListItemButton>
+
+            {tokenPayload && tokenPayload.is_admin && 
+              <>
+                <ListItemButton>
+                  <ListItemIcon><ConstructionOutlined /></ListItemIcon>
+                  <ListItemText primary="Конструктор территорий" sx={{ textAlign: 'justify' }}/>
+                </ListItemButton>
+
+                <ListItemButton>
+                  <ListItemIcon><PersonOutline /></ListItemIcon>
+                  <ListItemText primary="Пользователи" sx={{ textAlign: 'justify' }} />
+                </ListItemButton>
+              </>
+            }
 
             <ListItemButton>
               <ListItemIcon><Settings /></ListItemIcon>
