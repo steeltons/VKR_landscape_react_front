@@ -10,6 +10,7 @@ import { getAllSoils, SoilRsDto } from "../../../services/soil";
 import { getAllGrounds, GroundRsDto } from "../../../services/ground";
 import { getAllWaters, WaterRsDto } from "../../../services/water";
 import { getAllClimats, ClimatRsDto } from "../../../services/climate";
+import { getAllLandscapeClimates, getAllLandscapeGrounds, getAllLandscapePlants, getAllLandscapeReliefs, getAllLandscapeSoils, getAllLandscapeWaters } from "../../../services/links";
 
 type LandscapeUi = { id: number; name: string; code: string; };
 
@@ -71,6 +72,13 @@ const LandscapeConstructorGrid = () => {
   const [climates, setClimates] = useState<ListObjectUi[]>([]);
   const [selectedClimates, setSelectedClimates] = useState<number[]>([]);
 
+  const [oldPlants, setOldPlants] = useState<number[]>([]);
+  const [oldReliefs, setOldReliefs] = useState<number[]>([]);
+  const [oldSoils, setOldSoils] = useState<number[]>([]);
+  const [oldGrounds, setOldGrounds] = useState<number[]>([]);
+  const [oldWaters, setOldWaters] = useState<number[]>([]);
+  const [oldClimates, setOldClimates] = useState<number[]>([]);
+
   const selectedLandscape = landscapes.find((l) => l.id === selectedId);
 
   useEffect(() => {
@@ -96,6 +104,34 @@ const LandscapeConstructorGrid = () => {
     );
   };
 
+  const handleSelectedLandscape = (landscapeId: number) => {
+    setSelectedId(landscapeId);
+
+    const fetchData = async () => {
+        const plants = await getAllLandscapePlants(landscapeId);
+        const reliefs = await getAllLandscapeReliefs(landscapeId);
+        const soils = await getAllLandscapeSoils(landscapeId);
+        const grounds = await getAllLandscapeGrounds(landscapeId);
+        const waters = await getAllLandscapeWaters(landscapeId);
+        const climates = await getAllLandscapeClimates(landscapeId);
+
+        setOldPlants([...plants]);
+        setOldReliefs([...reliefs]);
+        setOldSoils([...soils]);
+        setOldGrounds([...grounds]);
+        setOldWaters([...waters]);
+        setOldClimates([...climates]);
+
+        setSelectedPlants([...plants]);
+        setSelectedReliefs([...reliefs]);
+        setSelectedSoils([...soils]);
+        setSelectedGrounds([...grounds]);
+        setSelectedWaters([...waters]);
+        setSelectedClimates([...climates]);
+    };
+    fetchData();
+  }
+
   return (
     <Box sx={{ p: 3 }}>
       <FormControl sx={{ width: '33%' }}>
@@ -103,7 +139,7 @@ const LandscapeConstructorGrid = () => {
         <Select
           value={selectedId}
           label="Выберите ландшафт"
-          onChange={(e) => setSelectedId(e.target.value as number)}
+          onChange={(e) => handleSelectedLandscape(e.target.value as number)}
         >
           {landscapes.map((landscape) => (
             <MenuItem key={landscape.id} value={landscape.id}>
