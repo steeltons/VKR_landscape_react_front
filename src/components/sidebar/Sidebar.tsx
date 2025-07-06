@@ -13,7 +13,8 @@ import {
   GrassOutlined,
   WaterOutlined,
   PersonOutline,
-  ConstructionOutlined
+  ConstructionOutlined,
+  FoundationOutlined
 } from '@mui/icons-material';
 import { useJwtPayload } from '../../hooks/usejwtPayload';
 import { useSnackbar } from 'notistack';
@@ -92,6 +93,11 @@ export const Sidebar: React.FC<SidebarProps> = ({ onOpenKnowledgeDb, onLogout, s
             <ListItemButton onClick={() => setSelectedSidebarTab(SidebarTab.LANDSCAPE)}>
               <ListItemIcon><LandscapeOutlined /></ListItemIcon>
               <ListItemText primary="Ландшафты" sx={{ textAlign: 'justify' }}/>
+            </ListItemButton>
+
+            <ListItemButton onClick={() => setSelectedSidebarTab(SidebarTab.FOUNDAMENTS)}>
+              <ListItemIcon><FoundationOutlined /></ListItemIcon>
+              <ListItemText primary="Фундаменты" sx={{ textAlign: 'justify' }}/>
             </ListItemButton>
 
             <ListItemButton onClick={() => setSelectedSidebarTab(SidebarTab.PLANT)}>

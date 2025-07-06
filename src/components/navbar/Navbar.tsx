@@ -27,9 +27,9 @@ export const Navbar: React.FC = () => {
         }}
       >
         <Typography variant="h6" component="div" sx={{ fontWeight: 'bold', fontSize: '1.1rem' }}>
-          soilDB
+          Система поддержки исследований в области ландшафтной географии
         </Typography>
-        <Box sx={{ width: isMobile ? '60%' : '250px' }}>
+        {/* <Box sx={{ width: isMobile ? '60%' : '250px' }}>
           <TextField
             fullWidth
             size="small"
@@ -44,7 +44,7 @@ export const Navbar: React.FC = () => {
               },
             }}
           />
-        </Box>
+        </Box> */}
       </Toolbar>
     </AppBar>
   );
