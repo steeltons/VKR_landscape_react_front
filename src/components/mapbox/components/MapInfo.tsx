@@ -7,6 +7,7 @@ export type MapInfoProps = {
   territories: RelatedObjectRsDto[];
   lat: number;
   lng: number;
+  opened: boolean
 };
 
 const createInfoImage = (imageBase64: string | null | undefined) => {
@@ -28,8 +29,8 @@ const createInfoImage = (imageBase64: string | null | undefined) => {
     return (<></>)
 }
 
-const MapInfo: React.FC<MapInfoProps> = ({ territories, lat, lng }) => {
-  const [open, setOpen] = useState(true);
+const MapInfo: React.FC<MapInfoProps> = ({ territories, lat, lng, opened }) => {
+  const [open, setOpen] = useState(opened);
 
   return (
     <Box
@@ -38,7 +39,7 @@ const MapInfo: React.FC<MapInfoProps> = ({ territories, lat, lng }) => {
             bottom: 0,
             right: 1,
             width: 450,
-            zIndex: 1000,
+            zIndex: 1300,
         }}
     >
         {/* Выступ-тогглер */}

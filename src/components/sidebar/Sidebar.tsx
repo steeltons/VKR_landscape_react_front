@@ -39,6 +39,7 @@ export const Sidebar: React.FC<SidebarProps> = ({ onOpenKnowledgeDb, onLogout, s
     try {
       await logoutUser();
       enqueueSnackbar('Вы успешно вышли из системы', { variant: 'success' });
+      setSelectedSidebarTab(null);
       onLogout();
     } catch (error: any) {
       enqueueSnackbar('Что-то пошло не так', { variant: 'error' });

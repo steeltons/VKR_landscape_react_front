@@ -97,7 +97,7 @@ export const MapBox: React.FC<MapBoxProps> = ({ lat, lng, zoom = 12 }) => {
       <CenterOnClick lat={lat} lng={lng} setMarkerProps={setMarkerProps} setCurrentRelatedObject={ setCurrentRelatedObject } />
     </MapContainer>
 
-    <MapInfo lat={ markerProps.lat } lng={ markerProps.lng } territories={ currentRelatedObject?.territories || [] }/>
+    <MapInfo lat={ markerProps.lat } lng={ markerProps.lng } territories={ currentRelatedObject?.territories || [] } opened={ false }/>
   </Box>
   );
 };
