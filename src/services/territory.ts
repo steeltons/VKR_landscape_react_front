@@ -45,5 +45,5 @@ export async function getTerritorieById(territorieId: number) : Promise<Territor
       territorie_id: territorieId
     }
   })
-  return response.data as TerritorieRsDto;
+  return response.data[0] as TerritorieRsDto;
 }

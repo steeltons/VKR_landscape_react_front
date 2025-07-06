@@ -10,6 +10,7 @@ import { useSnackbar } from 'notistack';
 import { getTerritorieById, RelatedObjectRsDto, RelatedObjectsRsDto } from '../../services/territory';
 import { Box, Typography } from '@mui/material';
 import MapInfo from './components/MapInfo';
+import { CustomColor } from '../../common/models';
 
 delete (L.Icon.Default.prototype as any)._getIconUrl;
 L.Icon.Default.mergeOptions({
@@ -29,6 +30,12 @@ export type MarkerProps = {
     lng: number;
 }
 
+export type TerritorieColor = {
+    points: CoordinatesRsDto[];
+    color: CustomColor;
+    territorieId: number;
+}
+
 function groupPointsByTerritoryId(points : CoordinatesRsDto[]) : Map<number, CoordinatesRsDto[]> {
     return points.reduce((map, point) => {
         const key = point.coords_territorie_id;
@@ -42,12 +49,10 @@ function groupPointsByTerritoryId(points : CoordinatesRsDto[]) : Map<number, Coo
 
 export const MapBox: React.FC<MapBoxProps> = ({ lat, lng, zoom = 12 }) => {    
 
-    const [markerProps, setMarkerProps] = useState<MarkerProps>({
-        lat: lat, 
-        lng: lng
-    })
+    const [markerProps, setMarkerProps] = useState<MarkerProps>({lat: lat, lng: lng})
     const [responsePoints, setResponsePoints] = useState<Array<CoordinatesRsDto[]>>(new Array());
     const [currentRelatedObject, setCurrentRelatedObject] = useState<RelatedObjectsRsDto | null>(null);
+    const [territorieColors, setTerritorieColors] = useState<TerritorieColor[]>([]);
 
     useEffect(() => {
         const fetchData = async () => {
@@ -57,8 +62,14 @@ export const MapBox: React.FC<MapBoxProps> = ({ lat, lng, zoom = 12 }) => {
                     return {lat: object.coords_coord_x, lng: object.coords_coord_y}
                 })
                 let grouped_points = groupPointsByTerritoryId(response);
-                // let territories = grouped_points.keys()
-                  // .map((id) => getTerritorieById(id))
+                const territorieColors: TerritorieColor[] = [];
+                for (const pair of Array.from(grouped_points.entries())) {
+                    const territorie = await getTerritorieById(pair[0]);
+                    const color: CustomColor = {red: territorie.territorie_color_r, greeen: territorie.territorie_color_g, blue: territorie.territorie_color_b, alt: 0.2};
+
+                    territorieColors.push({points: pair[1], color: color, territorieId: pair[0]} as TerritorieColor);
+                } 
+                setTerritorieColors(territorieColors);
                 setResponsePoints(Array.from(grouped_points.values()))
             } catch (err : any) {
                 console.error(err.response?.data || err.message)
@@ -80,8 +91,8 @@ export const MapBox: React.FC<MapBoxProps> = ({ lat, lng, zoom = 12 }) => {
         attribution='&copy; OpenStreetMap contributors'
       />
       <MarkerPoint lat={markerProps.lat} lng={markerProps.lng} />
-      {responsePoints.map((points, index) => (
-        <ZonePolygon key={index} points={points} />
+      {territorieColors.map((obj, ind) => (
+        <ZonePolygon key={ obj.territorieId } points={ obj.points } color={ obj.color }/>
       ))}
       <CenterOnClick lat={lat} lng={lng} setMarkerProps={setMarkerProps} setCurrentRelatedObject={ setCurrentRelatedObject } />
     </MapContainer>

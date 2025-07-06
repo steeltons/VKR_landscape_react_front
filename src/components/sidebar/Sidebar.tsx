@@ -1,4 +1,4 @@
-import React, { useEffect, useState } from 'react';
+import React, { Dispatch, useEffect, useState } from 'react';
 import {
   Box, Drawer, List, ListItemButton, ListItemIcon, ListItemText,
   Divider
@@ -17,32 +17,27 @@ const drawerWidth = 350;
 interface SidebarProps {
   onOpenKnowledgeDb: () => void;
   onLoginClick: () => void;
+  onLogout: () => void;
 }
 
-export const Sidebar: React.FC<SidebarProps> = ({ onOpenKnowledgeDb, onLoginClick }) => {
-  const [renderTrigger, setRenderTrigger] = useState(false);
+export const Sidebar: React.FC<SidebarProps> = ({ onOpenKnowledgeDb, onLoginClick, onLogout }) => {
   const [showProfileForm, setShowProfileForm] = useState(false);
   const { enqueueSnackbar } = useSnackbar();
   const tokenPayload = useJwtPayload();
 
   const handleLoginButton = async () => {
     onLoginClick();
-    setRenderTrigger(prev => !prev);  
   };
 
   const handleOnLogout = async () => {
     try {
-      logoutUser();
+      await logoutUser();
       enqueueSnackbar('Вы успешно вышли из системы', { variant: 'success' });
-      setRenderTrigger(prev => !prev);
+      onLogout();
     } catch (error: any) {
       enqueueSnackbar('Что-то пошло не так', { variant: 'error' });
     }
   };
-
-  useEffect(() => {
-    console.log('Sidebar re-rendered due to token change');
-  }, [renderTrigger]);
 
   return (
     <Drawer

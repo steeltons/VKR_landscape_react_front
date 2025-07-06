@@ -20,18 +20,18 @@ const LoginLogoutModal: React.FC<LoginLogoutProps> = ({ open, onClose }) => {
         <Modal open={ open } onClose={ onClose }>
             <Box
                 sx={{
-                    backdropFilter: 'blur(4xp)',
-                    height: '100vh',
-                    display: 'flex',
-                    justifyContent: 'center',
-                    alignItems: 'center'
+                    outline: 'none',
+                    position: 'absolute',
+                    top: '50%',
+                    left: '50%',
+                    transform: 'translate(-50%, -50%)',
                 }}
             >
                 {currentAction === Action.LOGIN &&
                     <LoginForm onClose={ onClose } onChangeAction={() => setCurrentAction(Action.REGISTRATION)} />
                 }
                 {currentAction === Action.REGISTRATION &&
-                    <RegistrationForm onClose={ onClose } onChangeAction={() => setCurrentAction} />
+                    <RegistrationForm onClose={ onClose } onChangeAction={() => setCurrentAction(Action.LOGIN)} />
                 }
             </Box>
         </Modal>

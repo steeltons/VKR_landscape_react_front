@@ -79,6 +79,13 @@ export interface Climat {
   climat_picture_base64: string;
 }
 
+export type CustomColor = {
+  red: number;
+  greeen: number;
+  blue: number;
+  alt?: number;
+}
+
 export type ResponseMessage = {
   message: string;
 }

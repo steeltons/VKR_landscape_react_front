@@ -9,14 +9,22 @@ import LoginLogoutModal from "../../components/login/LoginLogoutModal";
 export default function MainPage() {
   const [knowledgeOpen, setKnowledgeOpen] = useState(false);
   const [isLoginModalOpen, setLoginModalOpen] = useState(false);
+  const [renderSidebarFlag, setRenderSidebarFlag] = useState(false);
+
+  const handleLoginClose = () => {
+    setLoginModalOpen(false);
+    setRenderSidebarFlag(prev => !prev);
+  }
 
   return (
     <>
       <Navbar />
       <CssBaseline />
       <Sidebar 
+        key={renderSidebarFlag.toString()}
         onOpenKnowledgeDb={() => setKnowledgeOpen(true)}
         onLoginClick={() => setLoginModalOpen(true)}
+        onLogout={() => setRenderSidebarFlag(prev => !prev)}
       />
       <Box
         sx={{
@@ -28,8 +36,7 @@ export default function MainPage() {
         <MapBox lat={43.1155} lng={131.8855} />
       </Box>
       <KnowledgeDatabase open={knowledgeOpen} onClose={() => setKnowledgeOpen(false)} />
-      {/* <LoginModal open={ isLoginModalOpen } onClose={() => setLoginModalOpen(false)} /> */}
-        <LoginLogoutModal open={ isLoginModalOpen } onClose={() => setLoginModalOpen(false)} />
+      <LoginLogoutModal open={ isLoginModalOpen } onClose={handleLoginClose} />
     </>
   );
 }
