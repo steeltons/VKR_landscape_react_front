@@ -118,12 +118,31 @@ const MapInfo: React.FC<MapInfoProps> = ({ territories, lat, lng }) => {
                             <Typography>Растения</Typography>
                             </AccordionSummary>
                             <AccordionDetails>
-                            {territorie.plants.map((plant, i) => (
-                                <Box key={i}>
-                                <Typography>Название: {plant.plant_name}</Typography>
-                                <Typography>Описание: {plant.plant_description}</Typography>
-                                </Box>
-                            ))}
+                                {territorie.plants.map((plant, i) => (
+                                    <Box
+                                    key={i}
+                                    sx={{
+                                        mb: 3,
+                                        overflow: 'hidden',
+                                    }}
+                                    >
+                                    {plant.plant_picture_base64 && (
+                                        <img
+                                        src={`data:image/jpeg;base64,${plant.plant_picture_base64}`}
+                                        alt="plant"
+                                        style={{
+                                            float: 'right',
+                                            width: 92,
+                                            height: 92,
+                                            objectFit: 'cover',
+                                            borderRadius: 8,
+                                        }}
+                                        />
+                                    )}
+                                    <Typography variant="subtitle1"><b>Название:</b> {plant.plant_name}</Typography>
+                                    <Typography variant="body2" sx={{ mt: 1 }}><b>Описание:</b> {plant.plant_description}</Typography>
+                                    </Box>
+                                ))}
                             </AccordionDetails>
                         </Accordion>
 
@@ -133,8 +152,27 @@ const MapInfo: React.FC<MapInfoProps> = ({ territories, lat, lng }) => {
                             </AccordionSummary>
                             <AccordionDetails>
                             {territorie.reliefs.map((relief, i) => (
-                                <Box key={i}>
+                                <Box
+                                    key={i}
+                                    sx={{
+                                        mb: 3,
+                                        overflow: 'hidden',
+                                    }}
+                                >
                                 <Typography>Название: {relief.relief_name}</Typography>
+                                {relief.relief_picture_base64 &&
+                                    <img
+                                        src={`data:image/jpeg;base64,${relief.relief_picture_base64}`}
+                                        alt="plant"
+                                        style={{
+                                            float: 'right',
+                                            width: 92,
+                                            height: 92,
+                                            objectFit: 'cover',
+                                            borderRadius: 8,
+                                        }}
+                                    />
+                                }
                                 <Typography>Описание: {relief.relief_description}</Typography>
                                 </Box>
                             ))}

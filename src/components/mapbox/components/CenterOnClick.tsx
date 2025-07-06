@@ -20,7 +20,7 @@ export const CenterOnClick: React.FC<CenterOnClickProps> = ({ lat, lng, setMarke
 
   const getRelatedObjects = async ({lat, lng} : CenterOnClickPoint) => {
     try {
-        const result : RelatedObjectsRsDto = await getRelatedObjectsByCoord(lat, lng);
+        const result : RelatedObjectsRsDto = await getRelatedObjectsByCoord(lat, lng, true);
         setCurrentRelatedObject(result);
     } catch (exception : any) {
       setCurrentRelatedObject(null);

@@ -6,10 +6,21 @@ import { MapBox } from "../../components/mapbox/MapBox";
 import KnowledgeDatabase from "../../components/knowledgedatabase/KnowledgeDatabase";
 import LoginLogoutModal from "../../components/login/LoginLogoutModal";
 
+export enum SidebarTab {
+  PLANT = 'PLANT',
+  CLIMATE = 'CLIMATE',
+  SOIL = 'SOIL',
+  WATER = 'WATER',
+  GROUND = 'GROUND',
+  PROFILE = 'PROFILE',
+  RELIEF = 'RELIEF',
+}
+
 export default function MainPage() {
   const [knowledgeOpen, setKnowledgeOpen] = useState(false);
   const [isLoginModalOpen, setLoginModalOpen] = useState(false);
   const [renderSidebarFlag, setRenderSidebarFlag] = useState(false);
+  const [selecterdSidebarTab, setSelectedSidebarTab] = useState<SidebarTab | null>(null);
 
   const handleLoginClose = () => {
     setLoginModalOpen(false);

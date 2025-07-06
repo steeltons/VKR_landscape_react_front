@@ -13,10 +13,13 @@ const UserProfile = () => {
     const fetchUser = async () => {
       if (payload?.id) {
         const data = await getUserById(Number(payload.id));
-        const image = await getImageById(data.user_picture_id);
+        if (data.user_picture_id) {
+          const image = await getImageById(data.user_picture_id);
+          setUserImage(image.picture_base64);          
+        } else {
+          setUserImage(null);
+        }
         setUser(data);
-        console.log(image)
-        setUserImage(image.picture_base64);
       }
     };
     fetchUser();
@@ -33,7 +36,7 @@ const UserProfile = () => {
         }}
       />
       <Typography variant="h6" sx={{ mt: 1 }}>
-        {user
+        {user && user.user_name
           ? `${user.user_surname} ${user.user_name} ${user.user_fathername ?? ""}`
           : "Пользователь"}
       </Typography>

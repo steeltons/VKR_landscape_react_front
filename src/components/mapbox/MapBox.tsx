@@ -65,7 +65,7 @@ export const MapBox: React.FC<MapBoxProps> = ({ lat, lng, zoom = 12 }) => {
                 const territorieColors: TerritorieColor[] = [];
                 for (const pair of Array.from(grouped_points.entries())) {
                     const territorie = await getTerritorieById(pair[0]);
-                    const color: CustomColor = {red: territorie.territorie_color_r, greeen: territorie.territorie_color_g, blue: territorie.territorie_color_b, alt: 0.2};
+                    const color: CustomColor = {red: territorie.territorie_color_r, greeen: territorie.territorie_color_g, blue: territorie.territorie_color_b, alt: 0.5};
 
                     territorieColors.push({points: pair[1], color: color, territorieId: pair[0]} as TerritorieColor);
                 } 

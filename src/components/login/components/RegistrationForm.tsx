@@ -53,8 +53,8 @@ const RegistrationForm: React.FC<LoginModalProps> = ({ onClose, onChangeAction }
       console.log(newErrors.email);
     }
 
-    if (!/(?=.*[A-Z])(?=.*\d)(?=.*[^a-zA-Z0-9]).{8,64}/.test(password)) {
-      newErrors.password = 'Пароль от 8 до 64 символов, минимум одна заглавная, цифра и спецсимвол.';
+    if (!/(?=.*[A-Z])(?=.*\d)(?=.*[^a-zA-Z0-9]).{4,30}/.test(password)) {
+      newErrors.password = 'Пароль от 4 до 30 символов, минимум одна заглавная, цифра и спецсимвол.';
       console.log(newErrors.password);
     }
 
