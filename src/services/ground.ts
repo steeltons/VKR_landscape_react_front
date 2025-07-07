@@ -40,7 +40,7 @@ export async function getGroundById(ground_id: number): Promise<GroundRsDto> {
   const response = await api.get('/grounds/one', {
     params: { ground_id },
   });
-  return response.data;
+  return response.data[0] as GroundRsDto;
 }
 
 // Добавить новый грунт

@@ -16,19 +16,10 @@ type Props = {
   canUserEdit: boolean;
 };
 
-const climates = ['умеренный', 'тропический', 'субтропический', 'арктический'];
-const temperatures = Array.from({ length: 61 }, (_, i) => -20 + i); // от -20°C до +40°C
-
 const CreatePlantForm = ({ onCancel, id, insertName, insertDescription, isUpdate, canUserEdit  }: Props) => {
   const [plantId, setPlantId] = useState(id);
   const [name, setName] = useState(insertName);
   const [description, setDescription] = useState(insertDescription);
-  const [isFeed, setIsFeed] = useState('Да');
-  const [needsSun, setNeedsSun] = useState('Да');
-  const [isAnnual, setIsAnnual] = useState('Нет');
-  const [climate, setClimate] = useState('умеренный');
-  const [minTemp, setMinTemp] = useState('15');
-  const [maxTemp, setMaxTemp] = useState('20');
   const [imagePreviews, setImagePreviews] = useState<string[]>([]);
   const [imageFiles, setImageFiles] = useState<File[]>([]);
   const { enqueueSnackbar } = useSnackbar();
@@ -189,81 +180,6 @@ const CreatePlantForm = ({ onCancel, id, insertName, insertDescription, isUpdate
               ))}
             </Box>
           </Box>
-        </Grid>
-
-        <Grid item xs={12} sm={4}>
-          <FormControl fullWidth
-            disabled={ !canUserEdit }
-          >
-            <InputLabel>Является кормовым</InputLabel>
-            <Select value={isFeed} label="Является кормовым" onChange={(e) => setIsFeed(e.target.value)}>
-              <MenuItem value="Да">Да</MenuItem>
-              <MenuItem value="Нет">Нет</MenuItem>
-            </Select>
-          </FormControl>
-        </Grid>
-
-        <Grid item xs={12} sm={4}>
-          <FormControl fullWidth
-            disabled={ !canUserEdit }
-          >
-            <InputLabel>Нужен солнечный свет</InputLabel>
-            <Select value={needsSun} label="Нужен солнечный свет" onChange={(e) => setNeedsSun(e.target.value)}>
-              <MenuItem value="Да">Да</MenuItem>
-              <MenuItem value="Нет">Нет</MenuItem>
-            </Select>
-          </FormControl>
-        </Grid>
-
-        <Grid item xs={12} sm={4}>
-          <FormControl fullWidth
-            disabled={ !canUserEdit }
-          >
-            <InputLabel>Однолетнее</InputLabel>
-            <Select value={isAnnual} label="Однолетнее" onChange={(e) => setIsAnnual(e.target.value)}>
-              <MenuItem value="Да">Да</MenuItem>
-              <MenuItem value="Нет">Нет</MenuItem>
-            </Select>
-          </FormControl>
-        </Grid>
-
-        <Grid item xs={12} sm={4}>
-          <FormControl fullWidth
-            disabled={ !canUserEdit }
-          >
-            <InputLabel>Климат</InputLabel>
-            <Select value={climate} label="Климат" onChange={(e) => setClimate(e.target.value)}>
-              {climates.map((c) => (
-                <MenuItem key={c} value={c}>{c}</MenuItem>
-              ))}
-            </Select>
-          </FormControl>
-        </Grid>
-
-        <Grid item xs={6} sm={4}>
-          <FormControl fullWidth
-            disabled={ !canUserEdit }
-          >
-            <InputLabel>Мин. температура</InputLabel>
-            <Select value={minTemp} label="Мин. температура" onChange={(e) => setMinTemp(e.target.value)}>
-              {temperatures.map((t) => (
-                <MenuItem key={t} value={t}>{t} ℃</MenuItem>
-              ))}
-            </Select>
-          </FormControl>
-        </Grid>
-
-        <Grid item xs={6} sm={4}>
-          <FormControl fullWidth
-            disabled={ !canUserEdit }
-          >
-            <InputLabel>Макс. температура</InputLabel>
-            <Select value={maxTemp} label="Макс. температура" onChange={(e) => setMaxTemp(e.target.value)}>
-              {temperatures.map((t) => (
-                <MenuItem key={t} value={t}>{t} ℃</MenuItem>
-              ))}
-            </Select>
-          </FormControl>
         </Grid>
 
         {canUserEdit &&

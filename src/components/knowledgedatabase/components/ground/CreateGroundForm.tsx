@@ -1,25 +1,26 @@
 import {
   Box, Button, Grid, MenuItem, TextField, Typography, InputLabel, Select, FormControl,
 } from '@mui/material';
-import { useState } from 'react';
+import { useEffect, useState } from 'react';
 import { enqueueSnackbar, useSnackbar } from 'notistack';
-import { uploadImageFile } from '../../../../services/images';
-import { CreateGroundRqDto, insertGround, updateGround, UpdateGroundRqDto } from '../../../../services/ground';
+import { getImageById, uploadImageFile } from '../../../../services/images';
+import { CreateGroundRqDto, getGroundById, insertGround, updateGround, UpdateGroundRqDto } from '../../../../services/ground';
+import { base64ToFile } from '../../../../utils/imageConverter';
 
 type Props = {
   onCancel: () => void;
   id?: number;
-  insertName: string;
-  insertDescription: string;
-  insertetImage?: string;
   isUpdate: boolean;
   canUserEdit: boolean;
 };
 
-const CreateGroundForm= ({ onCancel, id, insertName, insertDescription, isUpdate, canUserEdit  }: Props) => {
+const CreateGroundForm= ({ onCancel, id, isUpdate, canUserEdit  }: Props) => {
   const [formId, setFormId] = useState(id);
-  const [name, setName] = useState(insertName);
-  const [description, setDescription] = useState(insertDescription);
+  const [name, setName] = useState("");
+  const [description, setDescription] = useState("");
+  const [density, setDensity] = useState<number>(0);
+  const [humidity, setHumidity] = useState<number>(0);
+  const [solidity, setSolidity] = useState<number>(0);
   const [imagePreviews, setImagePreviews] = useState<string[]>([]);
   const [imageFiles, setImageFiles] = useState<File[]>([]);
   const { enqueueSnackbar } = useSnackbar();
@@ -42,6 +43,28 @@ const CreateGroundForm= ({ onCancel, id, insertName, insertDescription, isUpdate
     }
   }
 
+  useEffect(() => {
+    const fetchData = async() => {
+      if (formId) {
+        const ground = await getGroundById(formId);
+        setName(ground.ground_name);
+        setDescription(ground.ground_description);
+        setDensity(ground.ground_density);
+        setHumidity(ground.ground_humidity);
+        setSolidity(ground.ground_solidity);
+        if (ground.ground_picture_id) {
+          const image = getImageById(ground.ground_picture_id);
+          const base64 = (await image).picture_base64;
+          const file = base64ToFile(base64, 'image.png', '.jpg');
+          const preview = URL.createObjectURL(file);
+          setImageFiles([file]);
+          setImagePreviews([preview]);
+        }
+      }
+    };
+    fetchData();
+  }, []);
+
 
   const handleSubmit = () => {
     const upload = async () => {
@@ -55,7 +78,10 @@ const CreateGroundForm= ({ onCancel, id, insertName, insertDescription, isUpdate
           ground_id: id,
           ground_name: name,
           ground_description: description,
-          ground_picture_id: imageId
+          ground_picture_id: imageId,
+          ground_humidity: humidity,
+          ground_density: density,
+          ground_solidity: solidity
         }
         handleUploadObject(updateRqDto);
       } else {
@@ -63,9 +89,9 @@ const CreateGroundForm= ({ onCancel, id, insertName, insertDescription, isUpdate
           ground_name: name,
           ground_description: description,
           ground_picture_id: imageId,
-          ground_density: 0,
-          ground_humidity: 0,
-          ground_solidity: 0
+          ground_density: density,
+          ground_humidity: humidity,
+          ground_solidity: solidity
       }
         handleCreateObject(createRqDto);
       }
@@ -182,6 +208,51 @@ const CreateGroundForm= ({ onCancel, id, insertName, insertDescription, isUpdate
               ))}
             </Box>
           </Box>
+        </Grid>
+
+        <Grid item xs={12} sm={4}>
+          <FormControl fullWidth
+            disabled={ !canUserEdit }
+          >
+            <TextField
+              fullWidth
+              label="Плотность"
+              type="number"
+              value={ density }
+              onChange={(e) => setDensity(Number(e.target.value))}
+              disabled={!canUserEdit}
+            />
+          </FormControl>
+        </Grid>
+
+        <Grid item xs={12} sm={4}>
+          <FormControl fullWidth
+            disabled={ !canUserEdit }
+          >
+            <TextField
+              fullWidth
+              label="Влажность"
+              type="number"
+              value={ humidity }
+              onChange={(e) => setHumidity(Number(e.target.value))}
+              disabled={!canUserEdit}
+            />
+          </FormControl>
+        </Grid>
+
+        <Grid item xs={12} sm={4}>
+          <FormControl fullWidth
+            disabled={ !canUserEdit }
+          >
+            <TextField
+              fullWidth
+              label="Твёрдость"
+              type="number"
+              value={ solidity }
+              onChange={(e) => setSolidity(Number(e.target.value))}
+              disabled={!canUserEdit}
+            />
+          </FormControl>
         </Grid>
 
         {canUserEdit &&

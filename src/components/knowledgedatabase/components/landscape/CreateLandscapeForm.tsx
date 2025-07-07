@@ -1,200 +1,202 @@
+import React, { useEffect, useState } from 'react';
 import {
-  Box, Button, Grid, MenuItem, TextField, Typography, InputLabel, Select, FormControl,
+  Box, Button, Grid, TextField, Typography
 } from '@mui/material';
-import { useState } from 'react';
 import { useSnackbar } from 'notistack';
-import { uploadImageFile } from '../../../../services/images';
-import { CreateLandscapeRqDto, insertLandscape, updateLandscape, UpdateLandscapeRqDto } from '../../../../services/landscape';
+import { getImageById, uploadImageFile } from '../../../../services/images';
+import {
+  CreateLandscapeRqDto, insertLandscape,
+  updateLandscape, UpdateLandscapeRqDto,
+  getLandscapeById, LandscapeRsDto
+} from '../../../../services/landscape';
+import { base64ToFile } from '../../../../utils/imageConverter';
 
 type Props = {
   onCancel: () => void;
   id?: number;
-  insertName: string;
-  insertDescription: string;
-  insertetImage?: string;
   isUpdate: boolean;
   canUserEdit: boolean;
 };
 
-const CreateLandscapeForm = ({ onCancel, id, insertName, insertDescription, isUpdate, canUserEdit  }: Props) => {
-  const [formId, setFormId] = useState(id);
-  const [name, setName] = useState(insertName);
-  const [description, setDescription] = useState(insertDescription);
-  const [imagePreviews, setImagePreviews] = useState<string[]>([]);
-  const [imageFiles, setImageFiles] = useState<File[]>([]);
+const CreateLandscapeForm: React.FC<Props> = ({
+  onCancel, id, isUpdate, canUserEdit
+}) => {
   const { enqueueSnackbar } = useSnackbar();
 
-   const handleUploadObject = async (data: UpdateLandscapeRqDto) => {
+  const [name, setName] = useState('');
+  const [description, setDescription] = useState('');
+  const [areaPercent, setAreaPercent] = useState<number | ''>('');
+  const [areaSquare, setAreaSquare] = useState<number | ''>('');
+  const [code, setCode] = useState('');
+  const [kr, setKr] = useState<number | ''>('');
+  const [imagePreviews, setImagePreviews] = useState<string[]>([]);
+  const [imageFiles, setImageFiles] = useState<File[]>([]);
+
+  useEffect(() => {
+  const fetchData = async () => {
+    if (id) {
       try {
-        const response = await updateLandscape(data);
-        enqueueSnackbar(response.message, { variant: 'success' })
-      } catch (error: any) {
-        enqueueSnackbar('Что-то пошло не так', { variant: 'error' })
+        const landscape = await getLandscapeById(id);
+        setName(landscape.landscape_name);
+        setDescription(landscape.landscape_description);
+        setAreaPercent(landscape.landscape_area_in_percents);
+        setAreaSquare(landscape.landscape_area_in_square_kilometers);
+        setCode(landscape.landscape_code);
+        setKr(landscape.landscape_KR);
+
+        if (landscape.landscape_picture_id) {
+          const image = await getImageById(landscape.landscape_picture_id);
+          const base64 = image.picture_base64;
+          const file = base64ToFile(base64, 'landscape_image', '.jpg');
+          const preview = URL.createObjectURL(file);
+          setImageFiles([file]);
+          setImagePreviews([preview]);
+        }
+      } catch (error) {
+        enqueueSnackbar('Ошибка при загрузке данных ландшафта', { variant: 'error' });
       }
     }
+  };
+  fetchData();
+}, []);
 
-  const handleCreateObject = async (data: CreateLandscapeRqDto) => {
+  const handleImageUpload = (e: React.ChangeEvent<HTMLInputElement>) => {
+    const files = Array.from(e.target.files || []);
+    const previews = files.map(f => URL.createObjectURL(f));
+    setImageFiles(files);
+    setImagePreviews(previews);
+  };
+
+  const handleSubmit = async () => {
     try {
-      const response = await insertLandscape(data);
-      enqueueSnackbar(response.message, { variant: 'success' })
-    } catch (error: any) {
-        enqueueSnackbar('Что-то пошло не так', { variant: 'error' })
-    }
-  }
+      const imgId = imageFiles.length > 0
+        ? await uploadImageFile(imageFiles[0])
+        : undefined;
 
-
-  const handleSubmit = () => {
-    const upload = async () => {
-      const imageId  = (imageFiles.length !== 0)
-      ?  await uploadImageFile(imageFiles[0])
-      : undefined;
-
-      console.log('ImageId', imageId)
-      if (isUpdate) {
-        const updateRqDto : UpdateLandscapeRqDto = {
+      if (isUpdate && id) {
+        const dto: UpdateLandscapeRqDto = {
           landscape_id: id,
           landscape_name: name,
           landscape_description: description,
-          landscape_picture_id: imageId
-        }
-        handleUploadObject(updateRqDto);
+          landscape_area_in_percents: Number(areaPercent),
+          landscape_area_in_square_kilometers: Number(areaSquare),
+          landscape_code: code,
+          landscape_KR: Number(kr),
+          landscape_picture_id: imgId
+        };
+        const res = await updateLandscape(dto);
+        enqueueSnackbar(res.message, { variant: 'success' });
       } else {
-        const plantRqDto : CreateLandscapeRqDto = {
+        const dto: CreateLandscapeRqDto = {
           landscape_name: name,
           landscape_description: description,
-          landscape_picture_id: imageId,
-          landscape_area_in_percents: 0,
-          landscape_area_in_square_kilometers: 0,
-          landscape_code: '',
-          landscape_KR: 0
+          landscape_area_in_percents: Number(areaPercent),
+          landscape_area_in_square_kilometers: Number(areaSquare),
+          landscape_code: code,
+          landscape_KR: Number(kr),
+          landscape_picture_id: imgId
+        };
+        const res = await insertLandscape(dto);
+        enqueueSnackbar(res.message, { variant: 'success' });
       }
-        handleCreateObject(plantRqDto);
-      }
+      onCancel();
+    } catch (e: any) {
+      enqueueSnackbar(e.message || 'Ошибка при сохранении', { variant: 'error' });
     }
-    
-    try {
-      upload();
-    } catch(error: any) {
-      enqueueSnackbar('Что-то пошло не так', { variant: 'error' })
-    }
-  };
-
-  const handleImageUpload = (event: React.ChangeEvent<HTMLInputElement>) => {
-    const files = Array.from(event.target.files || []);
-    const newPreviews = files.map(file => URL.createObjectURL(file));
-    setImageFiles(prev => [...prev, ...files]);
-    setImagePreviews(prev => [...prev, ...newPreviews]);
-  };
-
-  const handleRemoveImage = (index: number) => {
-    const updatedFiles = [...imageFiles];
-    const updatedPreviews = [...imagePreviews];
-    updatedFiles.splice(index, 1);
-    updatedPreviews.splice(index, 1);
-    setImageFiles(updatedFiles);
-    setImagePreviews(updatedPreviews);
   };
 
   return (
     <Box sx={{ p: 3 }}>
       <Button variant="outlined" onClick={onCancel} sx={{ mb: 2 }}>
-        ← Вернуться к ладшафтам
+        ← Вернуться к ландшафтам
       </Button>
       <Typography variant="h5" gutterBottom>
-        ➕ {(formId === undefined) ? 'Добавление нового ландшафта' : `Редактирование воднгого ландшафта ${name}`}
+        ➕ {isUpdate ? `Редактирование ландшафта "${name}"` : 'Добавление нового ландшафта'}
       </Typography>
 
       <Grid container spacing={2}>
         <Grid item xs={12}>
-          <TextField 
-            fullWidth 
-            label="Название ландшафта" 
-            value={name}
-            disabled={ !canUserEdit }
-            onChange={(e) => setName(e.target.value)} 
+          <TextField
+            fullWidth label="Название"
+            value={name} disabled={!canUserEdit}
+            onChange={e => setName(e.target.value)}
           />
         </Grid>
         <Grid item xs={12}>
           <TextField
-            fullWidth
-            label="Описание"
-            multiline
-            rows={3}
-            value={description}
-            disabled={ !canUserEdit }
-            onChange={(e) => setDescription(e.target.value)}
+            fullWidth label="Описание" multiline rows={3}
+            value={description} disabled={!canUserEdit}
+            onChange={e => setDescription(e.target.value)}
+          />
+        </Grid>
+        <Grid item xs={12} sm={6}>
+          <TextField
+            fullWidth label="Площадь (%)"
+            type="number"
+            value={areaPercent} 
+            disabled={!canUserEdit}
+            onChange={e => setAreaPercent(e.target.value === '' ? '' : Number(e.target.value))}
+          />
+        </Grid>
+        <Grid item xs={12} sm={6}>
+          <TextField
+            fullWidth label="Площадь (км²)"
+            type="number"
+            value={areaSquare} 
+            disabled={!canUserEdit}
+            onChange={e => setAreaSquare(e.target.value === '' ? '' : Number(e.target.value))}
+          />
+        </Grid>
+        <Grid item xs={12} sm={6}>
+          <TextField
+            fullWidth label="Код"
+            value={code} 
+            disabled={!canUserEdit}
+            onChange={e => setCode(e.target.value)}
+          />
+        </Grid>
+        <Grid item xs={12} sm={6}>
+          <TextField
+            fullWidth label="Коэффициент KR"
+            type="number"
+            value={kr} 
+            disabled={!canUserEdit}
+            onChange={e => setKr(e.target.value === '' ? '' : Number(e.target.value))}
           />
         </Grid>
 
         <Grid item xs={12}>
-          <Box sx={{ display: 'flex', flexDirection: 'column', alignItems: 'flex-start' }}>
-            {canUserEdit &&
-              <label htmlFor="upload-image">
-                <input
-                  accept="image/*"
-                  id="upload-image"
-                  type="file"
-                  multiple
-                  style={{ display: 'none' }}
-                  onChange={handleImageUpload}
+          {canUserEdit && (
+            <label htmlFor="upload-image">
+              <input
+                accept="image/*"
+                id="upload-image"
+                type="file"
+                style={{ display: 'none' }}
+                onChange={handleImageUpload}
+              />
+              <Button component="span">📤 Загрузить изображение</Button>
+            </label>
+          )}
+          <Box sx={{ display: 'flex', flexWrap: 'wrap', gap: 2, mt: 1 }}>
+            {imagePreviews.map((src, idx) => (
+              <Box key={idx}>
+                <img
+                  src={src}
+                  alt={`preview-${idx}`}
+                  style={{ width: 100, height: 100, objectFit: 'cover', borderRadius: 4 }}
                 />
-                <Button variant="text" component="span">
-                  📤 Загрузить изображения
-                </Button>
-              </label>
-            }
-
-            <Box sx={{ display: 'flex', flexWrap: 'wrap', gap: 3, mt: 2 }}>
-              {imagePreviews.map((preview, index) => (
-                <Box key={index} sx={{ position: 'relative', display: 'inline-block'}}>
-                  <img
-                    src={preview}
-                    alt={`preview-${index}`}
-                    style={{
-                        width: 150,
-                        height: 150,
-                        objectFit: 'cover',
-                        borderRadius: 4,
-                        border: '1px solid #ccc'
-                    }}
-                  />
-                  <Button
-                    onClick={() => handleRemoveImage(index)}
-                    size="small"
-                    sx={{
-                      position: 'absolute',
-                      bottom: 4,
-                      right: 0,
-                      minWidth: '24px',
-                      height: '24px',
-                      fontSize: '16px',
-                      lineHeight: 1,
-                      borderRadius: '50%',
-                      backgroundColor: '#f44336',
-                      color: 'white',
-                      '&:hover': {
-                        backgroundColor: '#d32f2f',
-                      },
-                    }}
-                  >
-                    ×
-                  </Button>
-                </Box>
-              ))}
-            </Box>
+              </Box>
+            ))}
           </Box>
         </Grid>
 
-        {canUserEdit &&
+        {canUserEdit && (
           <Grid item xs={12} sx={{ display: 'flex', justifyContent: 'flex-end', gap: 2 }}>
-            <Button variant="outlined" onClick={onCancel}>
-              ❌ Отмена
-            </Button>
-            <Button variant="contained" color="success" onClick={handleSubmit}>
-              💾 Сохранить
-            </Button>
+            <Button variant="outlined" onClick={onCancel}>❌ Отмена</Button>
+            <Button variant="contained" color="success" onClick={handleSubmit}>💾 Сохранить</Button>
           </Grid>
-        }
+        )}
       </Grid>
     </Box>
   );

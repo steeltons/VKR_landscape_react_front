@@ -40,7 +40,7 @@ export async function getSoilById(soil_id: number): Promise<SoilRsDto> {
   const response = await api.get('/soils/one', {
     params: { soil_id },
   });
-  return response.data;
+  return response.data[0];
 }
 
 // Добавить новую почву

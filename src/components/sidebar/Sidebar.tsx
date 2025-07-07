@@ -85,6 +85,13 @@ export const Sidebar: React.FC<SidebarProps> = ({ onOpenKnowledgeDb, onLogout, s
               </ListItemButton>
             }
 
+            {tokenPayload?.is_admin &&
+              <ListItemButton onClick={() => setSelectedSidebarTab(SidebarTab.CONSTRUCTOR)}>
+                  <ListItemIcon><ConstructionOutlined /></ListItemIcon>
+                  <ListItemText primary="Конструктор ландшафтов" sx={{ textAlign: 'justify' }}/>
+              </ListItemButton>
+            }
+
             <ListItemButton onClick={() => setSelectedSidebarTab(SidebarTab.RELIEF)}>
               <ListItemIcon><Map /></ListItemIcon>
               <ListItemText primary="Рельефы" sx={{ textAlign: 'justify' }}/>
@@ -126,17 +133,10 @@ export const Sidebar: React.FC<SidebarProps> = ({ onOpenKnowledgeDb, onLogout, s
             </ListItemButton>
 
             {tokenPayload && tokenPayload.is_admin && 
-              <>
-                <ListItemButton onClick={() => setSelectedSidebarTab(SidebarTab.CONSTRUCTOR)}>
-                  <ListItemIcon><ConstructionOutlined /></ListItemIcon>
-                  <ListItemText primary="Конструктор ландшафтов" sx={{ textAlign: 'justify' }}/>
-                </ListItemButton>
-
                 <ListItemButton onClick={() => setSelectedSidebarTab(SidebarTab.USERS)}>
                   <ListItemIcon><PersonOutline /></ListItemIcon>
                   <ListItemText primary="Пользователи" sx={{ textAlign: 'justify' }} />
                 </ListItemButton>
-              </>
             }
 
             <ListItemButton>

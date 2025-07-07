@@ -83,8 +83,6 @@ const KnowledgeDatabaseGroundGrid = () => {
         return <CreateSoilForm 
             onCancel={() => setIsCreating(false)}
             id={ selectedObject?.id } 
-            insertName={ selectedObject?.name || '' } 
-            insertDescription={ selectedObject?.description || '' } 
             isUpdate={ selectedObject !== null } 
             canUserEdit={ isAdmin }    
         />;
@@ -99,7 +97,7 @@ const KnowledgeDatabaseGroundGrid = () => {
                     sx={{ mb: 2 }}
                     onClick={() => handleCreateObject()}
                 >
-                    Добавить новую почву
+                    Добавить новый грунт
                 </Button>
             }
             <Grid

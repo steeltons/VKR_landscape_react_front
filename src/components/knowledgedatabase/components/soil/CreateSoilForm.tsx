@@ -1,98 +1,99 @@
+import React, { useEffect, useState } from 'react';
 import {
-  Box, Button, Grid, MenuItem, TextField, Typography, InputLabel, Select, FormControl,
+  Box, Button, Grid, TextField, Typography,
 } from '@mui/material';
-import { useState } from 'react';
 import { enqueueSnackbar, useSnackbar } from 'notistack';
-import { uploadImageFile } from '../../../../services/images';
-import { CreateClimatRqDto, insertClimat, updateClimat, UpdateClimatRqDto } from '../../../../services/climate';
-import { CreateSoilRqDto, insertSoil, updateSoil, UpdateSoilRqDto } from '../../../../services/soil';
+import { getImageById, uploadImageFile } from '../../../../services/images';
+import {
+  CreateSoilRqDto, insertSoil,
+  UpdateSoilRqDto, updateSoil,
+  SoilRsDto, getSoilById
+} from '../../../../services/soil';
+import { base64ToFile } from '../../../../utils/imageConverter';
 
 type Props = {
   onCancel: () => void;
   id?: number;
-  insertName: string;
-  insertDescription: string;
-  insertetImage?: string;
   isUpdate: boolean;
   canUserEdit: boolean;
 };
 
-const CreateSoilForm= ({ onCancel, id, insertName, insertDescription, isUpdate, canUserEdit  }: Props) => {
-  const [formId, setFormId] = useState(id);
-  const [name, setName] = useState(insertName);
-  const [description, setDescription] = useState(insertDescription);
+const CreateSoilForm: React.FC<Props> = ({onCancel, id, isUpdate, canUserEdit}) => {
+  const [name, setName] = useState('');
+  const [description, setDescription] = useState('');
+  const [acidity, setAcidity] = useState<number | ''>('');
+  const [minerals, setMinerals] = useState('');
+  const [profile, setProfile] = useState('');
   const [imagePreviews, setImagePreviews] = useState<string[]>([]);
   const [imageFiles, setImageFiles] = useState<File[]>([]);
   const { enqueueSnackbar } = useSnackbar();
 
-   const handleUploadObject = async (data: UpdateSoilRqDto) => {
-      try {
-        const response = await updateSoil(data);
-        enqueueSnackbar(response.message, { variant: 'success' })
-      } catch (error: any) {
-        enqueueSnackbar('Что-то пошло не так', { variant: 'error' })
-      }
+  useEffect(() => {
+    const fetchData = async () => {
+        if (id) {
+          try {
+            const soil = await getSoilById(id);
+            console.log(soil);
+            setName(soil.soil_name);
+            setDescription(soil.soil_description);
+            setAcidity(soil.soil_acidity);
+            setMinerals(soil.soil_minerals);
+            setProfile(soil.soil_profile);
+            if (soil.soil_picture_id) {
+              const base64 = (await getImageById(soil.soil_picture_id)).picture_base64;
+              const image = base64ToFile(base64, 'image.png');
+              setImageFiles([image]);
+              setImagePreviews([URL.createObjectURL(image)]);
+            }
+          } catch(error: any) {
+            enqueueSnackbar(`Ошибка загрузки грунта`, { 'variant': 'error' })
+          }
+      };
     }
+    fetchData();
+  }, []);
 
-  const handleCreateObject = async (data: CreateSoilRqDto) => {
+  const handleImageUpload = (e: React.ChangeEvent<HTMLInputElement>) => {
+    const files = Array.from(e.target.files || []);
+    const previews = files.map(f => URL.createObjectURL(f));
+    setImageFiles(files);
+    setImagePreviews(previews);
+  };
+
+  const handleSubmit = async () => {
     try {
-      const response = await insertSoil(data);
-      enqueueSnackbar(response.message, { variant: 'success' })
-    } catch (error: any) {
-        enqueueSnackbar('Что-то пошло не так', { variant: 'error' })
-    }
-  }
+      const imgId = imageFiles.length > 0
+        ? await uploadImageFile(imageFiles[0])
+        : undefined;
 
-
-  const handleSubmit = () => {
-    const upload = async () => {
-      const imageId  = (imageFiles.length !== 0)
-      ?  await uploadImageFile(imageFiles[0])
-      : undefined;
-
-      console.log('ImageId', imageId)
-      if (isUpdate) {
-        const updateRqDto : UpdateSoilRqDto = {
+      if (isUpdate && id) {
+        const dto: UpdateSoilRqDto = {
           soil_id: id,
           soil_name: name,
           soil_description: description,
-          soil_picture_id: imageId
-        }
-        handleUploadObject(updateRqDto);
+          soil_acidity: typeof acidity === 'number' ? acidity : undefined,
+          soil_minerals: minerals,
+          soil_profile: profile,
+          soil_picture_id: imgId
+        };
+        const res = await updateSoil(dto);
+        enqueueSnackbar(res.message, { variant: 'success' });
       } else {
-        const createRqDto : CreateSoilRqDto = {
+        const dto: CreateSoilRqDto = {
           soil_name: name,
           soil_description: description,
-          soil_picture_id: imageId,
-          soil_acidity: 0,
-          soil_minerals: "",
-          soil_profile: ""
+          soil_acidity: typeof acidity === 'number' ? acidity : 0,
+          soil_minerals: minerals,
+          soil_profile: profile,
+          soil_picture_id: imgId
+        };
+        const res = await insertSoil(dto);
+        enqueueSnackbar(res.message, { variant: 'success' });
       }
-        handleCreateObject(createRqDto);
-      }
+      onCancel();
+    } catch (e: any) {
+      enqueueSnackbar(e.message || 'Ошибка при сохранении', { variant: 'error' });
     }
-    
-    try {
-      upload();
-    } catch(error: any) {
-      enqueueSnackbar('Что-то пошло не так', { variant: 'error' })
-    }
-  };
-
-  const handleImageUpload = (event: React.ChangeEvent<HTMLInputElement>) => {
-    const files = Array.from(event.target.files || []);
-    const newPreviews = files.map(file => URL.createObjectURL(file));
-    setImageFiles(prev => [...prev, ...files]);
-    setImagePreviews(prev => [...prev, ...newPreviews]);
-  };
-
-  const handleRemoveImage = (index: number) => {
-    const updatedFiles = [...imageFiles];
-    const updatedPreviews = [...imagePreviews];
-    updatedFiles.splice(index, 1);
-    updatedPreviews.splice(index, 1);
-    setImageFiles(updatedFiles);
-    setImagePreviews(updatedPreviews);
   };
 
   return (
@@ -101,100 +102,75 @@ const CreateSoilForm= ({ onCancel, id, insertName, insertDescription, isUpdate, 
         ← Вернуться к почвам
       </Button>
       <Typography variant="h5" gutterBottom>
-        ➕ {(formId === undefined) ? 'Добавление новой почвы' : `Редактирование почвы ${name}`}
+        ➕ {isUpdate ? `Редактирование почвы "${name}"` : 'Добавление новой почвы'}
       </Typography>
 
       <Grid container spacing={2}>
         <Grid item xs={12}>
-          <TextField 
-            fullWidth 
-            label="Название почвы" 
-            value={name}
-            disabled={ !canUserEdit }
-            onChange={(e) => setName(e.target.value)} 
+          <TextField
+            fullWidth label="Название" value={name} disabled={!canUserEdit}
+            onChange={e => setName(e.target.value)}
           />
         </Grid>
         <Grid item xs={12}>
           <TextField
-            fullWidth
-            label="Описание"
-            multiline
-            rows={3}
-            value={description}
-            disabled={ !canUserEdit }
-            onChange={(e) => setDescription(e.target.value)}
+            fullWidth label="Описание" multiline rows={3}
+            value={description} disabled={!canUserEdit}
+            onChange={e => setDescription(e.target.value)}
+          />
+        </Grid>
+        <Grid item xs={12} sm={4}>
+          <TextField
+            fullWidth label="Кислотность (pH)"
+            type="number" inputProps={{ step: 0.1, min: 0, max: 14 }}
+            value={acidity} disabled={!canUserEdit}
+            onChange={e => setAcidity(e.target.value === '' ? '' : Number(e.target.value))}
+          />
+        </Grid>
+        <Grid item xs={12} sm={4}>
+          <TextField
+            fullWidth label="Минералы"
+            value={minerals} disabled={!canUserEdit}
+            onChange={e => setMinerals(e.target.value)}
+          />
+        </Grid>
+        <Grid item xs={12} sm={4}>
+          <TextField
+            fullWidth label="Профиль"
+            value={profile} disabled={!canUserEdit}
+            onChange={e => setProfile(e.target.value)}
           />
         </Grid>
 
         <Grid item xs={12}>
-          <Box sx={{ display: 'flex', flexDirection: 'column', alignItems: 'flex-start' }}>
-            {canUserEdit &&
-              <label htmlFor="upload-image">
-                <input
-                  accept="image/*"
-                  id="upload-image"
-                  type="file"
-                  multiple
-                  style={{ display: 'none' }}
-                  onChange={handleImageUpload}
+          {canUserEdit && (
+            <label htmlFor="upload-image">
+              <input
+                accept="image/*" id="upload-image"
+                type="file" style={{ display: 'none' }}
+                onChange={handleImageUpload}
+              />
+              <Button component="span">📤 Загрузить изображение</Button>
+            </label>
+          )}
+          <Box sx={{ display: 'flex', flexWrap: 'wrap', gap: 2, mt: 1 }}>
+            {imagePreviews.map((src, idx) => (
+              <Box key={idx} sx={{ position: 'relative' }}>
+                <img
+                  src={src} alt={`preview-${idx}`}
+                  style={{ width: 100, height: 100, objectFit: 'cover', borderRadius: 4 }}
                 />
-                <Button variant="text" component="span">
-                  📤 Загрузить изображения
-                </Button>
-              </label>
-            }
-
-            <Box sx={{ display: 'flex', flexWrap: 'wrap', gap: 3, mt: 2 }}>
-              {imagePreviews.map((preview, index) => (
-                <Box key={index} sx={{ position: 'relative', display: 'inline-block'}}>
-                  <img
-                    src={preview}
-                    alt={`preview-${index}`}
-                    style={{
-                        width: 150,
-                        height: 150,
-                        objectFit: 'cover',
-                        borderRadius: 4,
-                        border: '1px solid #ccc'
-                    }}
-                  />
-                  <Button
-                    onClick={() => handleRemoveImage(index)}
-                    size="small"
-                    sx={{
-                      position: 'absolute',
-                      bottom: 4,
-                      right: 0,
-                      minWidth: '24px',
-                      height: '24px',
-                      fontSize: '16px',
-                      lineHeight: 1,
-                      borderRadius: '50%',
-                      backgroundColor: '#f44336',
-                      color: 'white',
-                      '&:hover': {
-                        backgroundColor: '#d32f2f',
-                      },
-                    }}
-                  >
-                    ×
-                  </Button>
-                </Box>
-              ))}
-            </Box>
+              </Box>
+            ))}
           </Box>
         </Grid>
 
-        {canUserEdit &&
+        {canUserEdit && (
           <Grid item xs={12} sx={{ display: 'flex', justifyContent: 'flex-end', gap: 2 }}>
-            <Button variant="outlined" onClick={onCancel}>
-              ❌ Отмена
-            </Button>
-            <Button variant="contained" color="success" onClick={handleSubmit}>
-              💾 Сохранить
-            </Button>
+            <Button variant="outlined" onClick={onCancel}>❌ Отмена</Button>
+            <Button variant="contained" color="success" onClick={handleSubmit}>💾 Сохранить</Button>
           </Grid>
-        }
+        )}
       </Grid>
     </Box>
   );

@@ -83,8 +83,6 @@ const KnowledgeDatabaseSoilGrid = () => {
         return <CreateSoilForm 
             onCancel={() => setIsCreating(false)}
             id={ selectedObject?.id } 
-            insertName={ selectedObject?.name || '' } 
-            insertDescription={ selectedObject?.description || '' } 
             isUpdate={ selectedObject !== null } 
             canUserEdit={ isAdmin }    
         />;

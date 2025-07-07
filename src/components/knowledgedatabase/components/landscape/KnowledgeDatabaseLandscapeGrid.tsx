@@ -83,8 +83,6 @@ const KnowledgeDatabaseLandscapeGrid = () => {
         return <CreateWaterForm 
             onCancel={() => setIsCreating(false)}
             id={ selectedObject?.id } 
-            insertName={ selectedObject?.name || '' } 
-            insertDescription={ selectedObject?.description || '' } 
             isUpdate={ selectedObject !== null } 
             canUserEdit={ isAdmin }    
         />;

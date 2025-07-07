@@ -50,7 +50,7 @@ export async function getLandscapeById(landscape_id: number): Promise<LandscapeR
   const response = await api.get('/landscapes/one', {
     params: { landscape_id },
   });
-  return response.data;
+  return response.data[0];
 }
 
 export async function insertLandscape(data: CreateLandscapeRqDto): Promise<ResponseMessage> {
