@@ -18,7 +18,7 @@ export const ZonePolygon: React.FC<ZonePolygonProps> = ({ points, color= DEFAULT
     .sort((a, b) => a.coords_order - b.coords_order)
     .map((point) => [point.coords_coord_x, point.coords_coord_y]);
 
-  const hexColor = rgbToHex(`rgb(${color.red},${color.blue},${color.greeen}})`)
+  const hexColor = rgbToHex(`rgb(${color.red},${color.greeen},${color.blue}})`)
   const opacity = color?.alt || DEFAULT_OPACITY;
 
   return (

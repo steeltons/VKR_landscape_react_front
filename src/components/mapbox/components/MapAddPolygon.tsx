@@ -1,9 +1,8 @@
-import React, { Dispatch, SetStateAction, useEffect, useRef, useState } from 'react';
+import React, { Dispatch, SetStateAction, useRef, useState } from 'react';
 import { Polyline, Polygon, useMapEvent } from 'react-leaflet';
 import { Box, IconButton, Paper, Collapse } from '@mui/material';
 import AddIcon from '@mui/icons-material/Add';
 import SaveIcon from '@mui/icons-material/Save';
-import PaletteIcon from '@mui/icons-material/Palette';
 import DeleteIcon from '@mui/icons-material/Delete';
 import { SketchPicker } from 'react-color';
 import L from 'leaflet';
@@ -13,6 +12,7 @@ import { createColoredTerritory } from '../../../services/territory';
 import { insertNewCoordinate } from '../../../services/coordinate';
 import { useSnackbar } from 'notistack';
 import { useJwtPayload } from '../../../hooks/usejwtPayload';
+import { EditLocationAltOutlined } from '@mui/icons-material';
 
 export type MarkerProps = {
   lat: number;
@@ -32,14 +32,22 @@ export type MapAddPolygonProps = {
 const MapAddPolygon: React.FC<MapAddPolygonProps> = ({ mode, setMode }) => {
   const [drawnPoints, setDrawnPoints] = useState<MarkerProps[]>([]);
   const [color, setColor] = useState<string>('#3388ff');
-  const [openControls, setOpenControls] = useState(true);
-  const containerRef = useRef<HTMLDivElement>(null);
-  const pickerRef = useRef<HTMLDivElement>(null);
+  const [openControls, setOpenControls] = useState(false);
   const { enqueueSnackbar } = useSnackbar();
   const payload = useJwtPayload();
+  const controlsRef = useRef<HTMLDivElement>(null);
 
-  useMapEvent('click', (e) => {
+  useMapEvent('click', (e: L.LeafletMouseEvent) => {
     if (mode === 'adding') {
+      const target = e.originalEvent.target as HTMLElement;
+      console.log(target)
+      if (
+            target.closest('.map-control-panel') || 
+            target.closest('.MuiIconButton-root') ||
+            target.closest('.sketch-picker')
+        ) {
+          return;
+        }
       setDrawnPoints((prev) => [...prev, { lat: e.latlng.lat, lng: e.latlng.lng }]);
     }
   });
@@ -68,16 +76,10 @@ const MapAddPolygon: React.FC<MapAddPolygonProps> = ({ mode, setMode }) => {
     fetchData();
   };
 
-  useEffect(() => {
-    if (containerRef.current) {
-      L.DomEvent.disableClickPropagation(containerRef.current);
-      L.DomEvent.disableScrollPropagation(containerRef.current);
-    }
-    if (pickerRef.current) {
-        L.DomEvent.disableClickPropagation(pickerRef.current);
-        L.DomEvent.disableScrollPropagation(pickerRef.current);
-    }
-  }, []);
+  const handleStartAdding = () => {
+      setDrawnPoints([]);
+      setMode(mode === 'adding' ? 'idle' : 'adding');
+  }
 
   const toggleControls = () => setOpenControls((prev) => !prev);
   const linePositions = drawnPoints.map((p) => [p.lat, p.lng] as [number, number]);
@@ -113,32 +115,40 @@ const MapAddPolygon: React.FC<MapAddPolygonProps> = ({ mode, setMode }) => {
           zIndex: 1500,
           transition: 'bottom 0.3s',
         }}
+        ref={controlsRef} 
       >
         {payload?.is_admin && (
-          <Paper elevation={4} sx={{ display: 'flex', alignItems: 'center', p: 1, background: 'white' }} ref={containerRef}>
-            <IconButton onClick={toggleControls} size="small">
-              {openControls ? <AddIcon /> : <PaletteIcon />}
-            </IconButton>
+          <Paper
+            className="map-control-panel"
+            elevation={4}
+            sx={{
+              display: 'flex',
+              alignItems: 'center',
+              p: 1,
+              background: 'white',
+              zIndex: 3000,
+            }}
+          >
+            <IconButton onClick={toggleControls} size="small"><EditLocationAltOutlined /></IconButton>
             <Collapse in={openControls} orientation="horizontal">
-              <IconButton onClick={() => setMode(mode === 'adding' ? 'idle' : 'adding')} color={mode === 'adding' ? 'secondary' : 'default'}>
-                <AddIcon />
+              <IconButton onClick={handleStartAdding} color={mode === 'adding' ? 'secondary' : 'default'} sx={{  pointerEvents: 'auto' }}>
+                    <AddIcon />
+                </IconButton>
+                  <IconButton onClick={handleSave} disabled={drawnPoints.length < 2} color="primary" sx={{  pointerEvents: 'auto' }}>
+                    <SaveIcon />
+                  </IconButton>
+                  <IconButton onClick={handleClearAllPoints} disabled={drawnPoints.length === 0} color="error" sx={{  pointerEvents: 'auto' }}>
+                    <DeleteIcon />
               </IconButton>
-              <IconButton onClick={handleSave} disabled={drawnPoints.length < 2} color="primary">
-                <SaveIcon />
-              </IconButton>
-              <IconButton onClick={handleClearAllPoints} disabled={drawnPoints.length === 0} color="error">
-                <DeleteIcon />
-              </IconButton>
-              <div ref={pickerRef}>
-                <SketchPicker 
-                    color={color} 
-                    onChangeComplete={(c) => setColor(c.hex)} 
-                    disableAlpha 
-                />
-              </div>
+              <Box sx={{ display: 'flex', alignItems: 'center', pointerEvents: 'auto' }}>
+                <Box sx={{ ml: 2, pointerEvents: 'auto' }}>
+                  <SketchPicker color={color} onChangeComplete={(c) => setColor(c.hex)} disableAlpha />
+                </Box>
+              </Box>
             </Collapse>
           </Paper>
         )}
+
       </Box>
     </>
   );

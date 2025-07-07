@@ -28,6 +28,8 @@ api.interceptors.request.use((config) => {
 
         if (expDate && expDate >= now) {
             config.headers.Authorization = `Bearer ${token}`
+        } else {
+            localStorage.removeItem('accessToken')
         }
     }
 

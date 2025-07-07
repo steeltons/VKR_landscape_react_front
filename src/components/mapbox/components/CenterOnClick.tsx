@@ -2,8 +2,6 @@ import { useMap } from 'react-leaflet';
 import { Dispatch, FC, SetStateAction, useEffect } from 'react';
 import { MarkerProps } from '../MapBox';
 import { getRelatedObjectsByCoord, RelatedObjectsRsDto } from '../../../services/territory';
-import { point } from 'leaflet';
-import { useSnackbar } from 'notistack';
 
 interface CenterOnClickPoint {
   lat: number;
@@ -16,7 +14,7 @@ interface CenterOnClickProps extends CenterOnClickPoint {
     mode: 'idle' | 'adding';
 }
 
-export const CenterOnClick: React.FC<CenterOnClickProps> = ({ lat, lng, setMarkerProps, setCurrentRelatedObject, mode } : CenterOnClickProps, ) => {
+export function CenterOnClick({ lat, lng, setMarkerProps, setCurrentRelatedObject, mode } : CenterOnClickProps ) {
   const map = useMap();
 
   const getRelatedObjects = async ({lat, lng} : CenterOnClickPoint) => {
@@ -28,21 +26,20 @@ export const CenterOnClick: React.FC<CenterOnClickProps> = ({ lat, lng, setMarke
     }
 }
 
-  useEffect(() => {
-    const handleClick = (e: L.LeafletMouseEvent) => {
-      if (mode === 'idle') {
-        const point = e.latlng as CenterOnClickPoint;
-        setMarkerProps({ lat: point.lat, lng: point.lng });
-        getRelatedObjects(point);
-      }
-    };
+    useEffect(() => {
+      const handleClick = (e: L.LeafletMouseEvent) => {
+        if (mode === 'idle') {
+          const point = e.latlng as CenterOnClickPoint;
+          setMarkerProps({ lat: point.lat, lng: point.lng });
+          getRelatedObjects(point);
+        }
+      };
 
-    map.on('click', handleClick);
+      map.on('click', handleClick);
+      return () => {
+        map.off('click', handleClick);
+      };
+    }, [map, mode]);
 
-    return () => {
-      map.off('click', handleClick);
-    };
-  }, [map]);
-
-  return null;
+    return (<></>);
 };
