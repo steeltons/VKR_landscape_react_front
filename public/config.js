@@ -1,0 +1,3 @@
+window.REACT_APP_CONFIG = {
+  API_BASE_URL: "${REACT_APP_API_BASE_URL}"
+};

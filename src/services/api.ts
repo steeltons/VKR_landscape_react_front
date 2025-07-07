@@ -2,21 +2,17 @@ import axios from "axios";
 import { parseJwt } from "../utils/token";
 import { ApiException } from "../common/exceptions";
 import { ErrorResponse } from "../common/models";
+import { getApiBaseUrl } from "./getApiBaseUrl";
 
-const BASE_URL = process.env.REACT_APP_API_BASE_URL;
+const BASE_URL = getApiBaseUrl();
 
-
-if (!BASE_URL) {
-    throw new Error('REACT_APP_API_BASE_URL is not defined in .env file')
-}
-
-console.log(BASE_URL)
+console.log(BASE_URL);
 
 const api = axios.create({
-    baseURL: BASE_URL,
-    headers: {
-        'Content-Type': 'application/json',
-    },
+  baseURL: BASE_URL,
+  headers: {
+    'Content-Type': 'application/json',
+  },
 });
 
 api.interceptors.request.use((config) => {

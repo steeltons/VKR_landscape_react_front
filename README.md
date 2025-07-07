@@ -1,46 +1,27 @@
-# Getting Started with Create React App
+# VKR_Landscape_Geographics
 
-This project was bootstrapped with [Create React App](https://github.com/facebook/create-react-app).
 
-## Available Scripts
+Тема: Разработка системы поддержки исследований в области ландшафтной географии. Модуль хранения и обработки данных
 
-In the project directory, you can run:
+Автор: Цветков Станислав Олегович
 
-### `npm start`
+Группа: М9124-09.04.04рпис
 
-Runs the app in the development mode.\
-Open [http://localhost:3000](http://localhost:3000) to view it in the browser.
+Научный руководитель: Артемьева Ирина Леонидовна
 
-The page will reload if you make edits.\
-You will also see any lint errors in the console.
+Алгоритм запуска через терминал:
+ 1) Скачиваем проект
+ 2) Скачиваем проект backend приложения: https://github.com/DepartmentOfSoftwareEngineeringFEFU/M9123-09.03.04rpis-Bolychev
+ 3) Запускаем backend приложение по аглоритму запуска
+ 4) `docker compose build` Сборка фронта в docker
+ 5) `docker compose up -d` Запуск фронта в docker
 
-### `npm test`
+ Можно поменять url на backend, заменив его в docker-compose.yml
 
-Launches the test runner in the interactive watch mode.\
-See the section about [running tests](https://facebook.github.io/create-react-app/docs/running-tests) for more information.
-
-### `npm run build`
-
-Builds the app for production to the `build` folder.\
-It correctly bundles React in production mode and optimizes the build for the best performance.
-
-The build is minified and the filenames include the hashes.\
-Your app is ready to be deployed!
-
-See the section about [deployment](https://facebook.github.io/create-react-app/docs/deployment) for more information.
-
-### `npm run eject`
-
-**Note: this is a one-way operation. Once you `eject`, you can’t go back!**
-
-If you aren’t satisfied with the build tool and configuration choices, you can `eject` at any time. This command will remove the single build dependency from your project.
-
-Instead, it will copy all the configuration files and the transitive dependencies (webpack, Babel, ESLint, etc) right into your project so you have full control over them. All of the commands except `eject` will still work, but they will point to the copied scripts so you can tweak them. At this point you’re on your own.
-
-You don’t have to ever use `eject`. The curated feature set is suitable for small and middle deployments, and you shouldn’t feel obligated to use this feature. However we understand that this tool wouldn’t be useful if you couldn’t customize it when you are ready for it.
-
-## Learn More
-
-You can learn more in the [Create React App documentation](https://facebook.github.io/create-react-app/docs/getting-started).
-
-To learn React, check out the [React documentation](https://reactjs.org/).
+Авторизоваться в приложении можно под этими клиентами ("root", "lutiysidor" и "q" являются администраторами):
+ 1. Логин "root"           - Пароль "root"
+ 2. Логин "vanek2002"      - Пароль "123"
+ 3. Логин "petrpervuy"     - Пароль "123"
+ 4. Логин "mashapupkina"   - Пароль "123"
+ 5. Логин "lutiysidor"     - Пароль "123"
+ 6. Логин "q"              - Пароль "q"
