@@ -15,6 +15,7 @@ import { getAllLandscapeClimates, getAllLandscapeFoundation, getAllLandscapeGrou
 import { Territorie } from "../../../common/models";
 import { getAllTerritories, TerritorieRsDto } from "../../../services/territory";
 import { FoundationRsDto, getAllFoundations } from "../../../services/foundaments";
+import { enqueueSnackbar } from "notistack";
 
 type LandscapeUi = { id: number; name: string; code: string; };
 
@@ -174,48 +175,53 @@ const LandscapeConstructorGrid = () => {
     const unusedFoundations = oldFoundaments.filter(id => selectedFoundaments.indexOf(id) === -1);
     
     const fetchData = async () => {
-        if (newLandscapePlants.length !== 0) {
-            insertNewLandscapePlants(landscapeId, newLandscapePlants);
-        }
-        if (newRelief.length !== 0) {
-            insertNewLandscapeReliefs(landscapeId, newRelief);
-        }
-        if (newSoils.length !== 0) {
-            insertNewLandscapeSoils(landscapeId, newSoils);
-        }
-        if (newGrounds.length !== 0) {
-            insertNewLandscapeGrounds(landscapeId, newGrounds);
-        }
-        if (newWaters.length !== 0) {
-            insertNewLandscapeWaters(landscapeId, newWaters);
-        }
-        if (newClimates.length !== 0) {
-            insertNewLandscapeClimates(landscapeId, newClimates);
-        }
-        if (newFoundations.length !== 0) {
-          insertNewLandscapeFoundation(landscapeId, newFoundations);
-        }
+        try {
+          if (newLandscapePlants.length !== 0) {
+              insertNewLandscapePlants(landscapeId, newLandscapePlants);
+          }
+          if (newRelief.length !== 0) {
+              insertNewLandscapeReliefs(landscapeId, newRelief);
+          }
+          if (newSoils.length !== 0) {
+              insertNewLandscapeSoils(landscapeId, newSoils);
+          }
+          if (newGrounds.length !== 0) {
+              insertNewLandscapeGrounds(landscapeId, newGrounds);
+          }
+          if (newWaters.length !== 0) {
+              insertNewLandscapeWaters(landscapeId, newWaters);
+          }
+          if (newClimates.length !== 0) {
+              insertNewLandscapeClimates(landscapeId, newClimates);
+          }
+          if (newFoundations.length !== 0) {
+            insertNewLandscapeFoundation(landscapeId, newFoundations);
+          }
 
-        if (unusedPlants.length !== 0) {
-            removePlantLandscapeConnection(landscapeId, unusedPlants);
-        }
-        if (unusedReliefs.length !== 0) {
-            removeReliefLandscapeConnection(landscapeId, unusedReliefs);
-        }
-        if (unusedSoils.length !== 0) {
-            removeSoilLandscapeConnection(landscapeId, unusedSoils);
-        }
-        if (unusedGrounds.length !== 0) {
-            removeGroundLandscapeConnection(landscapeId, unusedGrounds);
-        }
-        if (unusedWaters.length !== 0) {
-            removeWaterLandscapeConnection(landscapeId, unusedWaters);
-        }
-        if (unusedClimates.length !== 0) {
-            removeClimatLandscapeConnection(landscapeId, unusedClimates);
-        }
-        if (unusedFoundations.length !== 0) {
-            removefFoundationLandscapeConnection(landscapeId, unusedFoundations);
+          if (unusedPlants.length !== 0) {
+              removePlantLandscapeConnection(landscapeId, unusedPlants);
+          }
+          if (unusedReliefs.length !== 0) {
+              removeReliefLandscapeConnection(landscapeId, unusedReliefs);
+          }
+          if (unusedSoils.length !== 0) {
+              removeSoilLandscapeConnection(landscapeId, unusedSoils);
+          }
+          if (unusedGrounds.length !== 0) {
+              removeGroundLandscapeConnection(landscapeId, unusedGrounds);
+          }
+          if (unusedWaters.length !== 0) {
+              removeWaterLandscapeConnection(landscapeId, unusedWaters);
+          }
+          if (unusedClimates.length !== 0) {
+              removeClimatLandscapeConnection(landscapeId, unusedClimates);
+          }
+          if (unusedFoundations.length !== 0) {
+              removefFoundationLandscapeConnection(landscapeId, unusedFoundations);
+          }
+          enqueueSnackbar('Ландшафт был успешно настроен', {variant: 'success'})
+        } catch(error: any) {
+          enqueueSnackbar('Ошибка связывания ланлшафта', { variant: 'error' })
         }
 
     };
