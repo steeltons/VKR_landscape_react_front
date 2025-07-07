@@ -15,6 +15,7 @@ import KnowledgeDatabaseLandscapeGrid from "../../components/knowledgedatabase/c
 import UserGrid from "../../components/knowledgedatabase/users/UserGrid";
 import LandscapeConstructorGrid from "../../components/knowledgedatabase/landscape_constructor/LandscapeConsturctorGrid";
 import KnowledgeDatabaseFoundationGrid from "../../components/knowledgedatabase/components/foundaments/KnowledgeDatabaseFoundamentGrid";
+import KnowledgeDatabaseTerritoryGrid from "../../components/knowledgedatabase/components/territories/KnowledgeDatabaseTerritorieGrid";
 
 export enum SidebarTab {
   LOGIN = 'Войти',
@@ -27,6 +28,7 @@ export enum SidebarTab {
   SOIL = 'Почва',
   GROUND = 'Грунт',
   WATER = 'Воды',
+  TERRITORIE = 'Территории',
   CONSTRUCTOR = 'Конструктор территорий',
   USERS = 'Пользователи',
   SETTINGS = 'Настройки'
@@ -59,6 +61,7 @@ export default function MainPage() {
       case SidebarTab.CLIMATE: return <KnowledgeDatabaseModal open={ true } onClose={handleKnowledgeDatabaseClose} selectedTab={ selecterdSidebarTab } renderChild={() => <KnowledgeDatabaseClimateGrid />} />;
       case SidebarTab.GROUND: return <KnowledgeDatabaseModal open={ true } onClose={handleKnowledgeDatabaseClose} selectedTab={ selecterdSidebarTab } renderChild={() => <KnowledgeDatabaseGroundGrid />} />;
       case SidebarTab.SOIL: return <KnowledgeDatabaseModal open={ true } onClose={handleKnowledgeDatabaseClose} selectedTab={ selecterdSidebarTab } renderChild={() => <KnowledgeDatabaseSoilGrid />} />;
+      case SidebarTab.TERRITORIE: return <KnowledgeDatabaseModal open={ true } onClose={handleKnowledgeDatabaseClose} selectedTab={ selecterdSidebarTab } renderChild={() => <KnowledgeDatabaseTerritoryGrid />} />;
       case SidebarTab.WATER: return <KnowledgeDatabaseModal open={ true } onClose={handleKnowledgeDatabaseClose} selectedTab={ selecterdSidebarTab } renderChild={() => <KnowledgeDatabaseWaterGrid />} />;
       case SidebarTab.USERS: return <KnowledgeDatabaseModal open={ true } onClose={handleKnowledgeDatabaseClose} selectedTab={ selecterdSidebarTab } renderChild={() => <UserGrid />} />
       case SidebarTab.CONSTRUCTOR: return <KnowledgeDatabaseModal open={ true } onClose={handleKnowledgeDatabaseClose} selectedTab={ selecterdSidebarTab } renderChild={() => <LandscapeConstructorGrid />} />
